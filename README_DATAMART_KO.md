@@ -99,6 +99,8 @@ for recommendation in engine.recommend(snapshot):
 농작업 의사결정 AI는 `DailyFarmWorkDecisionEngine`을 사용합니다.
 생육단계, 온실환경, 이미지/예찰, 작업이력을 `FarmWorkContext`로 합쳐 방제, 관수, 수확, 적엽 중 오늘 우선순위를 뽑습니다.
 
+실제 `딸기 전기`, `딸기 펠릿` 엑셀 데이터셋의 컬럼 매핑과 전처리 방향은 `DATASET_MAPPING_KO.md`에 정리되어 있습니다.
+
 ```python
 from libsbapi import (
     CropGrowthStage,
