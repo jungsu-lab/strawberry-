@@ -89,8 +89,26 @@ WSL 기준:
 
 ## 다음 개발 순서
 
-1. `01_핵심_운영데이터`를 일 단위 `FarmWorkContext`로 변환하는 전처리기를 만든다.
-2. 전기/펠릿 데이터를 같은 스키마로 정규화한다.
-3. `DailyFarmWorkDecisionEngine.plan_today()`로 날짜별 추천 로그를 생성한다.
+1. `01_핵심_운영데이터`를 일 단위 JSON으로 집계한다.
+2. `examples/sample_daily_context.json`과 같은 스키마로 저장한다.
+3. `python3 -m examples.build_daily_context path/to/daily_context.json`로 오늘 할 일 추천을 생성한다.
 4. 실제 작업 로그를 추가해 추천 결과와 실제 농작업/수확 결과를 비교한다.
 5. 작업별 점수 함수를 학습 모델로 교체한다.
+
+## 샘플 JSON 계약
+
+GitHub에는 원본 데이터 대신 하루치 샘플만 둔다.
+
+```text
+examples/sample_daily_context.json
+```
+
+필수 상위 키는 다음과 같다.
+
+| 키 | 설명 |
+| --- | --- |
+| `growth_stage` | `transplanting`, `vegetative`, `flowering`, `fruiting`, `harvest`, `resting` 중 하나 |
+| `snapshot` | 하루 단위로 집계한 온실환경, 양액/근권, 이미지/예찰 신호 |
+| `history` | 최근 관수, 예찰, 방제, 수확, 적엽 후 경과일 |
+
+전기/펠릿 엑셀 전처리기는 최종적으로 이 JSON을 만들면 된다. 그러면 `DailyFarmWorkDecisionEngine`은 데이터 출처와 상관없이 같은 방식으로 오늘 할 일을 추천한다.

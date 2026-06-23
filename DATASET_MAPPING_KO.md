@@ -102,7 +102,8 @@ C:\Users\연재성\Desktop\딸기_AI_의사결정_통합정리본
 2. `생육정보`는 가장 가까운 조사일을 해당 날짜에 forward-fill한다.
 3. `시간기준_제어정보`는 날짜별 평균/최대 개도율과 장비 작동 여부로 집계한다.
 4. 작업이력은 초기에는 규칙 기반으로 계산한다.
-5. 결과는 `FarmWorkContext`로 변환해 `DailyFarmWorkDecisionEngine.plan_today()`에 넣는다.
+5. 결과는 `examples/sample_daily_context.json`과 같은 JSON으로 저장한다.
+6. `python3 -m examples.build_daily_context path/to/daily_context.json`로 `FarmWorkContext`를 만들고 `DailyFarmWorkDecisionEngine.plan_today()`에 넣는다.
 
 ## 모델 확장 방향
 
