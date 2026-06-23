@@ -45,6 +45,16 @@ print(strawberry_rows[0])
 - `get_item_control_info_data_list(facility_id, crpsn_sn, item_code, fix_plntng_de, crpsn_end_de)`
 - `get_item_examin_info_data_list(facility_id, crpsn_sn, fix_plntng_de, crpsn_end_de)`
 
+## 2026 기준 데이터 범위
+
+스마트팜코리아 OPEN-API의 `스마트팜 빅데이터 제공서비스`는 시설원예 환경/제어/생육/경영 실시간 수집데이터이며, 공식 페이지 기준 데이터 수집년도는 2015년부터 2026년까지입니다.
+
+반면 `품목별 데이터셋 제공서비스`는 농가 품목기준 조회용 데이터마트 개방데이터이고, 공식 페이지 기준 데이터 수집년도는 2015년부터 2024년까지이며 작기 종료 후 연 단위로 적재됩니다. 시설원예 데이터셋 화면은 딸기, 토마토, 방울토마토, 오이, 파프리카의 환경정보, 제어정보, 생육정보, 경영정보를 안내합니다.
+
+- 스마트팜 빅데이터 제공서비스: https://www.smartfarmkorea.net/openApi/openApiList.do?menuId=M1104030101
+- 품목별 데이터셋 제공서비스: https://www.smartfarmkorea.net/openApi/openApiList.do?menuId=M1104030104
+- 시설원예 데이터셋: https://www.smartfarmkorea.net/datamart/fclty/list.do
+
 문서에 있는 다른 API도 `request(service, operation, *params)`로 바로 호출할 수 있습니다.
 
 ```python
@@ -82,4 +92,60 @@ snapshot = GreenhouseSnapshot(
 engine = BerryNextDecisionEngine()
 for recommendation in engine.recommend(snapshot):
     print(recommendation.action, recommendation.priority, recommendation.reason)
+```
+
+## 오늘 할 일 추천
+
+농작업 의사결정 AI는 `DailyFarmWorkDecisionEngine`을 사용합니다.
+생육단계, 온실환경, 이미지/예찰, 작업이력을 `FarmWorkContext`로 합쳐 방제, 관수, 수확, 적엽 중 오늘 우선순위를 뽑습니다.
+
+실제 `딸기 전기`, `딸기 펠릿` 엑셀 데이터셋의 컬럼 매핑과 전처리 방향은 `DATASET_MAPPING_KO.md`에 정리되어 있습니다.
+
+```python
+from libsbapi import (
+    CropGrowthStage,
+    DailyFarmWorkDecisionEngine,
+    FarmWorkContext,
+    FarmWorkHistory,
+    GreenhouseSnapshot,
+    ImageGrowthSignals,
+    WeatherForecast,
+)
+
+context = FarmWorkContext(
+    growth_stage=CropGrowthStage.HARVEST,
+    snapshot=GreenhouseSnapshot(
+        inside_temperature_c=27.5,
+        inside_humidity_pct=91.0,
+        solar_radiation_w_m2=540.0,
+        root_zone_moisture_pct=31.0,
+        vent_open_pct=8.0,
+        weather=WeatherForecast(rain_probability=75.0, expected_rain_mm=7.0),
+        image=ImageGrowthSignals(
+            ripe_fruit_ratio=0.86,
+            average_fruit_size_mm=31.0,
+            fruit_count=52,
+            leaf_density=0.88,
+            disease_spot_ratio=0.04,
+        ),
+    ),
+    history=FarmWorkHistory(
+        days_since_irrigation=2,
+        days_since_scouting=5,
+        days_since_disease_control=11,
+        days_since_harvest=3,
+        days_since_leaf_pruning=12,
+    ),
+)
+
+plan = DailyFarmWorkDecisionEngine().plan_today(context)
+print(plan.summary)
+for task in plan.tasks:
+    print(task.title, task.timing, task.priority, task.reason)
+```
+
+예제는 다음 명령으로 실행할 수 있습니다.
+
+```powershell
+py -m examples.daily_farmwork
 ```

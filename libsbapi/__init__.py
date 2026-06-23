@@ -11,6 +11,16 @@ from .berrynext import (
     WeatherForecast,
     compute_vpd_kpa,
 )
+from .farmwork import (
+    CropGrowthStage,
+    DailyFarmWorkDecisionEngine,
+    DailyFarmWorkPlan,
+    FarmWorkContext,
+    FarmWorkHistory,
+    FarmWorkTask,
+    FarmWorkType,
+    WorkTiming,
+)
 from .utils import byte_length, set_bit, valid_host
 from .constants import (ENCAPSULATED_INTERFACE_TRANSPORT, EXP_DETAILS,
                         EXP_NONE, EXP_TXT, MB_CONNECT_ERR, MB_ERR_TXT,
