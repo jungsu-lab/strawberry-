@@ -2,8 +2,28 @@
 /build/
 /dist/
 /lab/
+__pycache__/
 *.pyc
 /*.egg-info/
 /.idea/
 /.vscode/
 /venv/
+
+# Local greenhouse datasets and downloaded reference rooms.
+/data/
+/datasets/
+/딸기_AI_의사결정_통합정리본/
+/딸기 관련 데이터들/
+/딸기 관련 자료들/
+/딸기 전기/
+/딸기 펠릿/
+*.xlsx
+*.xls
+*.csv
+*.hwp
+*.zip
+*.parquet
+*.feather
+*.sqlite
+*.db
+*.env
