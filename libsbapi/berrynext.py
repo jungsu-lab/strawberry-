@@ -93,9 +93,11 @@ class IrrigationDecisionEngine:
         score = 0.0
         reasons = []
         safeguards = []
+        moisture_is_low = False
 
         if snapshot.root_zone_moisture_pct is not None:
             if snapshot.root_zone_moisture_pct < 35:
+                moisture_is_low = True
                 score += 0.35
                 reasons.append("root-zone moisture is low")
             elif snapshot.root_zone_moisture_pct > 75:
@@ -107,7 +109,7 @@ class IrrigationDecisionEngine:
             if vpd > 1.2:
                 score += 0.25
                 reasons.append("VPD indicates high water demand")
-            elif vpd < 0.35:
+            elif vpd < 0.35 and not moisture_is_low:
                 score -= 0.2
                 reasons.append("low VPD raises over-wet disease risk")
                 safeguards.append("prefer ventilation before irrigation")
@@ -221,6 +223,9 @@ class HarvestDecisionEngine:
         if snapshot.image.fruit_count is not None and snapshot.image.fruit_count >= 30:
             score += 0.15
             reasons.append("visible fruit count is sufficient")
+        elif snapshot.image.fruit_count is not None and snapshot.image.fruit_count > 0:
+            score += 0.15
+            reasons.append("fruit set indicates harvest monitoring window")
 
         if snapshot.weather.rain_probability is not None and snapshot.weather.rain_probability >= 60:
             score += 0.1

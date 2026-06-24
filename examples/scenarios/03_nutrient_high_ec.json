@@ -1,0 +1,51 @@
+{
+  "scenario": {
+    "id": "nutrient_high_ec",
+    "title": "Nutrient/EC check: high root-zone and drainage EC",
+    "expected_focus_action": "nutrient_ec_check"
+  },
+  "snapshot": {
+    "timestamp": "2026-06-25T10:30:00+09:00",
+    "temperature_c": 25.5,
+    "humidity_pct": 68.0,
+    "vpd_kpa": 0.98,
+    "radiation_w_m2": 510.0,
+    "cumulative_radiation_j_cm2": 105.0,
+    "co2_ppm": 650.0,
+    "substrate_moisture_pct": 59.0,
+    "root_zone_ec": 2.8,
+    "root_zone_ph": 6.0,
+    "drainage_ec": 3.1,
+    "drainage_ph": 6.2,
+    "feed_ec": 1.6,
+    "feed_ph": 6.0,
+    "drainage_ratio_pct": 24.0,
+    "weather_state": {
+      "rain_probability_pct": 20.0,
+      "expected_rain_mm": 0.0,
+      "outside_temperature_c": 24.0,
+      "outside_humidity_pct": 62.0
+    },
+    "growth_state": {
+      "growth_stage": "fruiting",
+      "fruit_count": 55,
+      "ripe_fruit_ratio": 0.46,
+      "leaf_density": 0.74,
+      "disease_spot_ratio": 0.0
+    },
+    "recent_work_history": [
+      {
+        "timestamp": "2026-06-25T06:40:00+09:00",
+        "action_type": "irrigation",
+        "source": "farm_work_log",
+        "notes": "short pulse irrigation"
+      }
+    ]
+  },
+  "candidate_actions": [
+    "nutrient_ec_check",
+    "irrigation",
+    "no_action"
+  ],
+  "predictions": []
+}

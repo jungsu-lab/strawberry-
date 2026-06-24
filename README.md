@@ -26,6 +26,8 @@ BerryNext AI는 이 라이브러리 위에 생육단계, 온실환경, 이미지
 
 ## 사용법
 
+Python 3.11 이상에서 실행한다. BerryNext 작업 추천 모듈이 표준 라이브러리 `StrEnum`을 사용한다.
+
 ### 초기화
 
 팀별로 할당된 키를 사용하여 모듈을 초기화한다. Authorization key 는 팀별로 할당되는 비밀키이다.
@@ -136,6 +138,16 @@ python3 -m examples.greenhouse_simulator
 examples/greenhouse_scenario_compare.py 에 샘플이 있다.
 테스트는 현재 위치에서 다음과 같이 한다.
 
+### BerryNext 데모 시나리오
+
+딸기 스마트팜 의사결정 보조 시스템의 현실적인 데모 입력은 `examples/scenarios/`에 있다.
+5개 상황(고 VPD+저수분, 고습+저 VPD, 고 EC, 저온, 적엽 주의)을 추천 모듈과 what-if 시뮬레이터로 함께 실행한다.
+
+python3 scripts/run_demo_scenarios.py
+
+결과는 `artifacts/demo_outputs/summary.json`과 `artifacts/demo_outputs/demo_report.md`에 저장된다.
+자세한 설명은 `docs/demo_scenarios.md`를 참고한다.
+
 python3 -m examples.greenhouse_scenario_compare
 
 ### 온실 시뮬레이터 대시보드
@@ -172,5 +184,3 @@ python3 -m examples.build_daily_context path/to/daily_context.json
 ```
 
 이 JSON은 나중에 `딸기_AI_의사결정_통합정리본/01_핵심_운영데이터`의 전기/펠릿 엑셀을 일 단위로 집계한 결과와 같은 계약으로 사용한다.
-
-

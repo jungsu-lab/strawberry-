@@ -1,6 +1,12 @@
-import requests
-from pymodbus.framer import FramerSocket
-from pymodbus.pdu import DecodePDU
+import collections.abc
+import logging
+import textwrap
+
+_logger = logging.getLogger(__name__)
+
+
+class ParserDependencyError(RuntimeError):
+    pass
 
 class Decoder:
     def __init__(self, framer, encode=False):
@@ -10,22 +16,31 @@ class Decoder:
 
     def decode(self, message):
         """Attempt to decode the supplied message."""
-        value = message if self.encode else c.encode(message, "hex_codec")
+        value = message if self.encode else message.hex()
         print("=" * 80)
         print(f"Decoding Message {value}")
         print("=" * 80)
-        decoders = [
-            self.framer(DecodePDU(True)),
-            self.framer(DecodePDU(False)),
-        ]
+        decoders = self._decoders()
         for decoder in decoders:
             print(f"{decoder.decoder.__class__.__name__}")
             print("-" * 80)
             try:
                 _, pdu = decoder.processIncomingFrame(message)
                 self.report(pdu)
-            except Exception:  # pylint: disable=broad-except
+            except (AttributeError, TypeError, ValueError):
                 self.check_errors(decoder, message)
+
+    def _decoders(self):
+        try:
+            from pymodbus.pdu import DecodePDU
+        except ImportError as error:
+            raise ParserDependencyError(
+                "pymodbus is required for libsbapi.parser.Decoder"
+            ) from error
+        return [
+            self.framer(DecodePDU(True)),
+            self.framer(DecodePDU(False)),
+        ]
 
     def check_errors(self, decoder, message):
         """Attempt to find message errors."""
@@ -69,5 +84,4 @@ class Decoder:
                 message.__doc__,
             )
         )
-
 

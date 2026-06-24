@@ -52,6 +52,29 @@ class BerryNextDecisionEngineTest(unittest.TestCase):
         self.assertEqual(irrigation.action, "delay_irrigation")
         self.assertIn("avoid extra irrigation while over-wet", irrigation.safeguards)
 
+    def test_low_root_zone_moisture_is_not_suppressed_by_low_vpd(self):
+        engine = BerryNextDecisionEngine()
+        snapshot = GreenhouseSnapshot(
+            inside_temperature_c=26,
+            inside_humidity_pct=98,
+            root_zone_moisture_pct=18,
+        )
+
+        irrigation = engine.irrigation.recommend(snapshot)
+
+        self.assertEqual(irrigation.action, "maintain_irrigation")
+        self.assertEqual(irrigation.score, 0.35)
+        self.assertNotIn("prefer ventilation before irrigation", irrigation.safeguards)
+
+    def test_visible_fruit_set_creates_harvest_monitoring_signal(self):
+        engine = BerryNextDecisionEngine()
+        snapshot = GreenhouseSnapshot(image=ImageGrowthSignals(fruit_count=4))
+
+        harvest = engine.harvest.recommend(snapshot)
+
+        self.assertEqual(harvest.score, 0.15)
+        self.assertIn("harvest monitoring window", harvest.reason)
+
 
 if __name__ == "__main__":
     unittest.main()

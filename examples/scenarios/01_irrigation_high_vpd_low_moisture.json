@@ -1,0 +1,62 @@
+{
+  "scenario": {
+    "id": "irrigation_high_vpd_low_moisture",
+    "title": "Irrigation check: high VPD with low substrate moisture",
+    "expected_focus_action": "irrigation"
+  },
+  "snapshot": {
+    "timestamp": "2026-06-25T13:00:00+09:00",
+    "temperature_c": 30.2,
+    "humidity_pct": 43.0,
+    "vpd_kpa": 1.72,
+    "radiation_w_m2": 760.0,
+    "cumulative_radiation_j_cm2": 148.0,
+    "co2_ppm": 610.0,
+    "substrate_moisture_pct": 47.0,
+    "root_zone_ec": 1.7,
+    "root_zone_ph": 6.1,
+    "drainage_ec": 1.9,
+    "drainage_ph": 6.3,
+    "feed_ec": 1.2,
+    "feed_ph": 6.0,
+    "drainage_ratio_pct": 32.0,
+    "weather_state": {
+      "rain_probability_pct": 10.0,
+      "expected_rain_mm": 0.0,
+      "outside_temperature_c": 31.0,
+      "outside_humidity_pct": 46.0
+    },
+    "growth_state": {
+      "growth_stage": "fruiting",
+      "fruit_count": 48,
+      "ripe_fruit_ratio": 0.52,
+      "leaf_density": 0.76,
+      "disease_spot_ratio": 0.0
+    },
+    "recent_work_history": []
+  },
+  "candidate_actions": [
+    "irrigation",
+    "shading_high_temperature",
+    "nutrient_ec_check",
+    "no_action"
+  ],
+  "predictions": [
+    {
+      "target": "substrate_moisture_pct",
+      "horizon_hours": 3,
+      "predicted_value": 43.0,
+      "predicted_delta": -4.0,
+      "confidence": 0.48,
+      "model_used": "gam_demo_candidate",
+      "fallback_used": false,
+      "metrics": {
+        "training_rows": 80,
+        "validation_mae": 0.62,
+        "baseline_mae": 0.59,
+        "validation_r2": -0.04,
+        "missing_feature_ratio": 0.08
+      }
+    }
+  ]
+}

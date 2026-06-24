@@ -70,11 +70,11 @@ def readstatus(readtime = False):
 # 양액기에 연결된 센서값 읽기
 reg = client.read_holding_registers(204, 3, 5)
 print ("EC : ", getobservation(reg[0], reg[1]), reg)
-ec = reg
+ec = getobservation(reg[0], reg[1])
 
 reg = client.read_holding_registers(213, 3, 5)
 print ("pH : ", getobservation(reg[0], reg[1]), reg)
-ph = reg
+ph = getobservation(reg[0], reg[1])
 
 reg = client.read_holding_registers(222, 3, 5)
 print ("일사 : ", getobservation(reg[0], reg[1]), reg)
@@ -107,7 +107,7 @@ for _ in range(1, 40):
 
 #""" 
 # 양액 관수 : NUT_WATER : 양액을 관수합니다.
-sendcommand (CMDCODE.JUST_WATER, 30, ec, ph)
+sendcommand (CMDCODE.NUT_WATER, 30, ec, ph)
 for _ in range(1, 40):
     readstatus(True)
     time.sleep(1)

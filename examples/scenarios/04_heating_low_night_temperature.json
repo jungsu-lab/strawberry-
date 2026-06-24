@@ -1,0 +1,61 @@
+{
+  "scenario": {
+    "id": "heating_low_night_temperature",
+    "title": "Heating/thermal protection: low night temperature",
+    "expected_focus_action": "heating_low_temperature"
+  },
+  "snapshot": {
+    "timestamp": "2026-06-25T04:30:00+09:00",
+    "temperature_c": 8.8,
+    "humidity_pct": 84.0,
+    "vpd_kpa": 0.12,
+    "radiation_w_m2": 0.0,
+    "cumulative_radiation_j_cm2": 0.0,
+    "co2_ppm": 720.0,
+    "substrate_moisture_pct": 61.0,
+    "root_zone_ec": 1.4,
+    "root_zone_ph": 6.2,
+    "drainage_ec": 1.5,
+    "drainage_ph": 6.4,
+    "feed_ec": 1.0,
+    "feed_ph": 6.0,
+    "drainage_ratio_pct": 36.0,
+    "weather_state": {
+      "rain_probability_pct": 15.0,
+      "expected_rain_mm": 0.0,
+      "outside_temperature_c": -1.0,
+      "outside_humidity_pct": 82.0
+    },
+    "growth_state": {
+      "growth_stage": "flowering",
+      "fruit_count": 26,
+      "ripe_fruit_ratio": 0.08,
+      "leaf_density": 0.7,
+      "disease_spot_ratio": 0.0
+    },
+    "recent_work_history": []
+  },
+  "candidate_actions": [
+    "heating_low_temperature",
+    "ventilation_dehumidification",
+    "no_action"
+  ],
+  "predictions": [
+    {
+      "target": "temperature_c",
+      "horizon_hours": 3,
+      "predicted_value": 8.5,
+      "predicted_delta": -0.3,
+      "confidence": 0.57,
+      "model_used": "gam_demo_candidate",
+      "fallback_used": false,
+      "metrics": {
+        "training_rows": 42,
+        "validation_mae": 0.9,
+        "baseline_mae": 0.75,
+        "validation_r2": -0.1,
+        "missing_feature_ratio": 0.12
+      }
+    }
+  ]
+}

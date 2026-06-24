@@ -1,0 +1,50 @@
+{
+  "scenario": {
+    "id": "leaf_removal_caution",
+    "title": "Leaf removal caution: dense canopy with recent leaf work",
+    "expected_focus_action": "leaf_removal_caution"
+  },
+  "snapshot": {
+    "timestamp": "2026-06-25T09:30:00+09:00",
+    "temperature_c": 24.0,
+    "humidity_pct": 88.0,
+    "vpd_kpa": 0.42,
+    "radiation_w_m2": 360.0,
+    "cumulative_radiation_j_cm2": 78.0,
+    "co2_ppm": 690.0,
+    "substrate_moisture_pct": 62.0,
+    "root_zone_ec": 1.5,
+    "root_zone_ph": 6.1,
+    "drainage_ec": 1.6,
+    "drainage_ph": 6.2,
+    "feed_ec": 1.1,
+    "feed_ph": 6.0,
+    "drainage_ratio_pct": 40.0,
+    "weather_state": {
+      "rain_probability_pct": 45.0,
+      "expected_rain_mm": 1.0,
+      "outside_temperature_c": 23.0,
+      "outside_humidity_pct": 78.0
+    },
+    "growth_state": {
+      "growth_stage": "fruiting",
+      "fruit_count": 62,
+      "ripe_fruit_ratio": 0.58,
+      "leaf_density": 0.93,
+      "disease_spot_ratio": 0.01
+    },
+    "recent_work_history": [
+      {
+        "timestamp": "2026-06-23T10:00:00+09:00",
+        "action_type": "leaf_pruning",
+        "source": "farm_work_log",
+        "notes": "moderate lower-leaf removal completed two days ago"
+      }
+    ]
+  },
+  "candidate_actions": [
+    "ventilation_dehumidification",
+    "no_action"
+  ],
+  "predictions": []
+}
