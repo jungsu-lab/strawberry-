@@ -35,6 +35,15 @@ from .greenhouse_simulator import (
     RunnerRemovalWork,
     SimulationStep,
 )
+from .simulation_runner import (
+    EvidenceLogEntry,
+    Scenario,
+    ScenarioComparison,
+    ScheduledWork,
+    SimulationRecord,
+    compare_scenarios,
+    simulate_scenario,
+)
 from .utils import byte_length, set_bit, valid_host
 from .constants import (ENCAPSULATED_INTERFACE_TRANSPORT, EXP_DETAILS,
                         EXP_NONE, EXP_TXT, MB_CONNECT_ERR, MB_ERR_TXT,

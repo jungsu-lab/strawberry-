@@ -129,6 +129,26 @@ examples/greenhouse_simulator.py 에 샘플이 있다.
 
 python3 -m examples.greenhouse_simulator
 
+### 온실 시뮬레이션 시나리오 비교
+
+논문 기반 규칙 시뮬레이터를 여러 날에 걸쳐 실행해 무작업, 관수 중심, 방제+적엽, 즉시 수확, 수확 지연 시나리오의 최종 상태를 비교한다.
+
+examples/greenhouse_scenario_compare.py 에 샘플이 있다.
+테스트는 현재 위치에서 다음과 같이 한다.
+
+python3 -m examples.greenhouse_scenario_compare
+
+### 온실 시뮬레이터 대시보드
+
+Streamlit 대시보드에서 초기 온실 상태, 환경 조건, 작업 강도, 비교 시나리오를 조정하고 배지수분, 배액 EC, 병해 위험, 상품 수확량, 품질 위험 변화를 그래프로 확인한다.
+결과 표에는 시나리오별 최종 상태와 논문 규칙의 `notes`, `warnings`, `evidence_tags`가 함께 표시된다.
+
+실행:
+
+```bash
+streamlit run dashboard/greenhouse_dashboard.py
+```
+
 ### 샘플 JSON으로 오늘 할 일 추천하기
 
 원본 엑셀과 대용량 CSV는 GitHub에 올리지 않는다. 대신 하루 단위로 정규화된 작은 JSON을 `FarmWorkContext`로 변환해 의사결정 엔진에 넣는 흐름을 제공한다.
