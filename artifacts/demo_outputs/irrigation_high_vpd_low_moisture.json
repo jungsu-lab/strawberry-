@@ -1,0 +1,298 @@
+{
+  "scenario_id": "irrigation_high_vpd_low_moisture",
+  "title": "Irrigation check: high VPD with low substrate moisture",
+  "expected_focus_action": "irrigation",
+  "input_path": "/home/jungsu0327/strawberry-/examples/scenarios/01_irrigation_high_vpd_low_moisture.json",
+  "recommendations": [
+    {
+      "action_type": "shading_high_temperature",
+      "priority": "high",
+      "confidence": 0.8,
+      "reason": "temperature is in a high-temperature caution range, radiation is high, VPD is high",
+      "expected_effect": "review heat-stress mitigation without reducing photosynthesis unnecessarily",
+      "risks": [
+        "excess shading can reduce photosynthesis and delay ripening"
+      ],
+      "evidence_references": [
+        "environment.shading_high_temperature.001"
+      ],
+      "safety_flags": [
+        "decision_support_only",
+        "requires_human_review"
+      ],
+      "model_used": "literature_manual_rules",
+      "fallback_used": true
+    },
+    {
+      "action_type": "irrigation",
+      "priority": "high",
+      "confidence": 0.25,
+      "reason": "substrate moisture is below the literature starting threshold, VPD is high, indicating higher transpiration demand, radiation is high enough to raise water-demand attention",
+      "expected_effect": "maintain root-zone water supply without treating the output as a control command",
+      "risks": [
+        "confirm recent irrigation, drainage, and sensor units before changing volume",
+        "usable training rows are below the configured minimum"
+      ],
+      "evidence_references": [
+        "irrigation.solar_moisture_vpd.001"
+      ],
+      "safety_flags": [
+        "decision_support_only",
+        "requires_human_review",
+        "insufficient_training_rows",
+        "insufficient_data_fallback",
+        "rule_based_fallback"
+      ],
+      "model_used": "literature_manual_rules",
+      "fallback_used": true
+    },
+    {
+      "action_type": "harvest_monitoring",
+      "priority": "low",
+      "confidence": 0.38,
+      "reason": "visible fruit count supports harvest review, high temperature can increase quality-loss risk",
+      "expected_effect": "support harvest timing review using ripening and quality-risk signals",
+      "risks": [
+        "market target and distribution temperature can change harvest thresholds"
+      ],
+      "evidence_references": [
+        "harvest.monitoring.001"
+      ],
+      "safety_flags": [
+        "decision_support_only",
+        "requires_human_review"
+      ],
+      "model_used": "literature_manual_rules",
+      "fallback_used": true
+    },
+    {
+      "action_type": "nutrient_ec_check",
+      "priority": "low",
+      "confidence": 0.2,
+      "reason": "compare root-zone EC with drainage EC before changing fertigation",
+      "expected_effect": "check salinity accumulation or nutrient dilution before adjusting fertilizer strength",
+      "risks": [
+        "do not diagnose plant nutrient status from EC alone"
+      ],
+      "evidence_references": [
+        "nutrient.ec_check.001"
+      ],
+      "safety_flags": [
+        "decision_support_only",
+        "requires_human_review"
+      ],
+      "model_used": "literature_manual_rules",
+      "fallback_used": true
+    },
+    {
+      "action_type": "ph_check",
+      "priority": "low",
+      "confidence": 0.2,
+      "reason": "pH signal is inside the starting monitoring range",
+      "expected_effect": "support nutrient availability by confirming pH drift with calibrated sensors",
+      "risks": [
+        "pH correction should be gradual and based on repeated measurements"
+      ],
+      "evidence_references": [
+        "nutrient.ph_check.001"
+      ],
+      "safety_flags": [
+        "decision_support_only",
+        "requires_human_review"
+      ],
+      "model_used": "literature_manual_rules",
+      "fallback_used": true
+    },
+    {
+      "action_type": "ventilation_dehumidification",
+      "priority": "low",
+      "confidence": 0.2,
+      "reason": "ventilation/dehumidification signal is weak",
+      "expected_effect": "reduce humidity and canopy wetness conditions while staying in decision-support mode",
+      "risks": [
+        "human review is required before ventilation or dehumidification control changes"
+      ],
+      "evidence_references": [
+        "environment.ventilation_dehumidification.001"
+      ],
+      "safety_flags": [
+        "decision_support_only",
+        "requires_human_review"
+      ],
+      "model_used": "literature_manual_rules",
+      "fallback_used": true
+    },
+    {
+      "action_type": "heating_low_temperature",
+      "priority": "low",
+      "confidence": 0.2,
+      "reason": "heating signal is weak",
+      "expected_effect": "review heating or thermal protection for flowering, fruiting, and ripening stability",
+      "risks": [
+        "consider energy cost and humidity rise when vents are closed"
+      ],
+      "evidence_references": [
+        "environment.heating_low_temperature.001"
+      ],
+      "safety_flags": [
+        "decision_support_only",
+        "requires_human_review"
+      ],
+      "model_used": "literature_manual_rules",
+      "fallback_used": true
+    },
+    {
+      "action_type": "disease_environment_risk_proxy",
+      "priority": "low",
+      "confidence": 0.2,
+      "reason": "environmental disease risk proxy review",
+      "expected_effect": "prioritize scouting and preventive review without claiming disease prediction",
+      "risks": [
+        "not actual disease prediction without disease labels"
+      ],
+      "evidence_references": [
+        "disease.environment_proxy.001"
+      ],
+      "safety_flags": [
+        "decision_support_only",
+        "requires_human_review",
+        "requires_field_confirmation"
+      ],
+      "model_used": "literature_manual_rules",
+      "fallback_used": true
+    },
+    {
+      "action_type": "leaf_removal_caution",
+      "priority": "low",
+      "confidence": 0.2,
+      "reason": "cautious leaf removal review only",
+      "expected_effect": "improve canopy airflow only after confirming plant vigor and leaf area",
+      "risks": [
+        "avoid aggressive or repeated leaf removal that reduces plant vigor"
+      ],
+      "evidence_references": [
+        "canopy.leaf_removal_caution.001"
+      ],
+      "safety_flags": [
+        "decision_support_only",
+        "requires_human_review"
+      ],
+      "model_used": "literature_manual_rules",
+      "fallback_used": true
+    }
+  ],
+  "what_if_simulation": {
+    "summary": "v0 what-if scenario estimate for decision support; compare directions, not precise effects",
+    "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command.",
+    "scenarios": [
+      {
+        "action_type": "irrigation",
+        "expected_state_direction": [
+          "moisture likely increases"
+        ],
+        "potential_benefits": [
+          "water-stress risk may decrease during high VPD or radiation"
+        ],
+        "potential_risks": [
+          "humidity risk may increase",
+          "over-wet substrate risk if recent irrigation is ignored"
+        ],
+        "confidence": 0.56,
+        "evidence_references": [
+          {
+            "source_type": "literature_assumption",
+            "title": "Sensor-controlled fertigation management for higher yield and quality in greenhouse hydroponic strawberries; Solar-radiation and substrate-moisture fertigation study for Seolhyang strawberry",
+            "reference_id": "irrigation.solar_moisture_vpd.001",
+            "url": null,
+            "note": "Local markdown: 01_s13580-025-00677-z.md links Rad/VPD/LAI to transpiration; 08_N0090300416.md reports solar-radiation and substrate-moisture fertigation including 60% moisture and 100/150/250 J/cm2 treatments.",
+            "confidence": 0.62
+          }
+        ],
+        "assumptions": [
+          "directional v0 estimate based on literature/manual rules",
+          "local calibration and human review are required",
+          "model prediction fallback: usable training rows are below the configured minimum"
+        ],
+        "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command."
+      },
+      {
+        "action_type": "shading_high_temperature",
+        "expected_state_direction": [
+          "heat stress may decrease",
+          "water demand may decrease"
+        ],
+        "potential_benefits": [
+          "fruit and canopy heat load may decrease"
+        ],
+        "potential_risks": [
+          "photosynthesis may decrease if shading is excessive"
+        ],
+        "confidence": 0.5,
+        "evidence_references": [
+          {
+            "source_type": "literature_assumption",
+            "title": "Sensor-controlled fertigation management for greenhouse strawberries; strawberry environment-growth prediction studies",
+            "reference_id": "environment.shading_high_temperature.001",
+            "url": null,
+            "note": "Local markdown: 01_s13580-025-00677-z.md links radiation and VPD with transpiration; 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md treats temperature, PAR, VPD, CO2, and moisture as explanatory variables.",
+            "confidence": 0.62
+          }
+        ],
+        "assumptions": [
+          "directional v0 estimate based on literature/manual rules",
+          "local calibration and human review are required"
+        ],
+        "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command."
+      },
+      {
+        "action_type": "nutrient_ec_check",
+        "expected_state_direction": [
+          "EC issue becomes better characterized",
+          "EC issue remains unresolved until fertigation is adjusted"
+        ],
+        "potential_benefits": [
+          "salinity or dilution risk may be identified before nutrient changes"
+        ],
+        "potential_risks": [
+          "checking alone does not correct EC"
+        ],
+        "confidence": 0.6,
+        "evidence_references": [
+          {
+            "source_type": "literature_assumption",
+            "title": "Sensor-controlled fertigation management for higher yield and quality in greenhouse hydroponic strawberries; Nutrient solution strength studies for Korean strawberry cultivars",
+            "reference_id": "nutrient.ec_check.001",
+            "url": null,
+            "note": "Local markdown: 01_s13580-025-00677-z.md describes EC monitoring and 0.6 to 1.5 dS/m management; 06_fpls-16-1685755.md summarizes cultivar-specific EC ranges and need for ongoing EC/ion monitoring.",
+            "confidence": 0.62
+          }
+        ],
+        "assumptions": [
+          "directional v0 estimate based on literature/manual rules",
+          "local calibration and human review are required"
+        ],
+        "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command."
+      },
+      {
+        "action_type": "no_action",
+        "expected_state_direction": [
+          "current trend likely continues",
+          "EC issue remains unresolved"
+        ],
+        "potential_benefits": [
+          "avoids intervention side effects"
+        ],
+        "potential_risks": [
+          "existing stress signals may persist"
+        ],
+        "confidence": 0.42,
+        "evidence_references": [],
+        "assumptions": [
+          "directional v0 estimate based on literature/manual rules",
+          "local calibration and human review are required"
+        ],
+        "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command."
+      }
+    ]
+  }
+}

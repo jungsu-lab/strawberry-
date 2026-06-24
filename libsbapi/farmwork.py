@@ -207,7 +207,7 @@ class DailyFarmWorkDecisionEngine:
         reasons = [base.reason]
 
         if context.growth_stage in HARVEST_STAGES:
-            score += 0.1
+            score += 0.2
             reasons.append("growth stage is in fruiting or harvest window")
 
         if context.history.days_since_harvest is not None and context.history.days_since_harvest >= 2:

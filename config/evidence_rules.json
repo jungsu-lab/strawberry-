@@ -1,0 +1,168 @@
+{
+  "evidence_rules": [
+    {
+      "id": "irrigation.solar_moisture_vpd.001",
+      "action_type": "irrigation",
+      "condition_variables": [
+        "substrate_moisture_pct",
+        "cumulative_radiation_j_cm2",
+        "vpd_kpa",
+        "radiation_w_m2"
+      ],
+      "condition_description": "Use substrate moisture together with accumulated radiation, current radiation, and VPD to judge whether water demand is increasing.",
+      "threshold_or_range": "Prototype trigger: substrate moisture below about 60% or cumulative radiation near 100-150 J/cm2; high VPD/radiation raises attention.",
+      "expected_effect": "Maintain root-zone water supply and reduce water-stress risk during high transpiration periods.",
+      "risk_or_caution": "Do not treat as an automatic irrigation command; confirm sensor unit, drainage, and recent irrigation history to avoid over-wet substrate.",
+      "evidence_level": "literature_assumption",
+      "source_title": "Sensor-controlled fertigation management for higher yield and quality in greenhouse hydroponic strawberries; Solar-radiation and substrate-moisture fertigation study for Seolhyang strawberry",
+      "source_note": "Local markdown: 01_s13580-025-00677-z.md links Rad/VPD/LAI to transpiration; 08_N0090300416.md reports solar-radiation and substrate-moisture fertigation including 60% moisture and 100/150/250 J/cm2 treatments.",
+      "needs_local_calibration": true
+    },
+    {
+      "id": "nutrient.ec_check.001",
+      "action_type": "nutrient_ec_check",
+      "condition_variables": [
+        "root_zone_ec",
+        "drainage_ec",
+        "feed_ec",
+        "growth_stage"
+      ],
+      "condition_description": "Check whether root-zone, drainage, or feed EC is outside the locally targeted nutrient range for the cultivar and growth stage.",
+      "threshold_or_range": "Starting assumption: Seolhyang hydroponic feed EC often cited around 0.8-1.5 dS/m; early-stage examples include lower EC such as 0.6 dS/m.",
+      "expected_effect": "Detect possible nutrient dilution, salinity accumulation, or stage-inappropriate nutrient strength before changing fertigation.",
+      "risk_or_caution": "Cultivar, substrate, drainage ratio, and closed/open hydroponic design can change the target EC; never infer plant nutrient status from EC alone.",
+      "evidence_level": "literature_assumption",
+      "source_title": "Sensor-controlled fertigation management for higher yield and quality in greenhouse hydroponic strawberries; Nutrient solution strength studies for Korean strawberry cultivars",
+      "source_note": "Local markdown: 01_s13580-025-00677-z.md describes EC monitoring and 0.6 to 1.5 dS/m management; 06_fpls-16-1685755.md summarizes cultivar-specific EC ranges and need for ongoing EC/ion monitoring.",
+      "needs_local_calibration": true
+    },
+    {
+      "id": "nutrient.ph_check.001",
+      "action_type": "ph_check",
+      "condition_variables": [
+        "root_zone_ph",
+        "drainage_ph",
+        "feed_ph"
+      ],
+      "condition_description": "Check whether nutrient, root-zone, or drainage pH is drifting outside the farm's preferred operating range.",
+      "threshold_or_range": "Starting assumption: monitor near mildly acidic hydroponic strawberry ranges; sensor-supported pH domain is 0-14 and practical targets must be farm-specific.",
+      "expected_effect": "Support nutrient availability and identify measurement or solution problems before EC or fertilizer adjustments.",
+      "risk_or_caution": "pH correction should be gradual and based on calibrated sensors; one pH reading is not enough to diagnose nutrient uptake.",
+      "evidence_level": "manual_assumption",
+      "source_title": "Smart-farm sensor model and nutrient-solution monitoring references",
+      "source_note": "Local markdown: 04_a60e0c2865b4ebc5f0a6bd8fb9a5fa7b3b60.md lists feed/waste nutrient pH sensor ranges; 01_s13580-025-00677-z.md describes EC/pH monitoring and calibration during fertigation.",
+      "needs_local_calibration": true
+    },
+    {
+      "id": "environment.ventilation_dehumidification.001",
+      "action_type": "ventilation_dehumidification",
+      "condition_variables": [
+        "humidity_pct",
+        "vpd_kpa",
+        "vent_open_pct",
+        "leaf_wetness_hours"
+      ],
+      "condition_description": "Use high humidity, low VPD, low ventilation, or long wet-canopy duration as environmental disease-risk proxy signals.",
+      "threshold_or_range": "Prototype trigger: humidity above about 85% or VPD below about 0.35 kPa, especially with low ventilation or wet canopy.",
+      "expected_effect": "Reduce humidity and canopy wetness conditions associated with environmental disease pressure.",
+      "risk_or_caution": "This is environmental disease risk proxy monitoring, not actual disease prediction; avoid ventilation that causes cold stress or rapid environmental swings.",
+      "evidence_level": "literature_assumption",
+      "source_title": "Strawberry growth/yield environment studies and Botrytis environment-risk references",
+      "source_note": "Local markdown: 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md uses RH, PAR, VPD, CO2, EC, and soil moisture as growth/yield predictors; simulator rules already separate environmental pressure from disease labels.",
+      "needs_local_calibration": true
+    },
+    {
+      "id": "environment.shading_high_temperature.001",
+      "action_type": "shading_high_temperature",
+      "condition_variables": [
+        "temperature_c",
+        "radiation_w_m2",
+        "vpd_kpa",
+        "cumulative_radiation_j_cm2"
+      ],
+      "condition_description": "Review shading or heat-stress mitigation when high temperature, high radiation, and high VPD coincide.",
+      "threshold_or_range": "Prototype trigger: temperature near or above 28 C with high radiation or VPD above about 1.2 kPa.",
+      "expected_effect": "Reduce heat and water-demand stress while protecting fruit quality and canopy water balance.",
+      "risk_or_caution": "Excess shading can reduce photosynthesis and delay ripening; use with radiation forecast and growth stage.",
+      "evidence_level": "literature_assumption",
+      "source_title": "Sensor-controlled fertigation management for greenhouse strawberries; strawberry environment-growth prediction studies",
+      "source_note": "Local markdown: 01_s13580-025-00677-z.md links radiation and VPD with transpiration; 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md treats temperature, PAR, VPD, CO2, and moisture as explanatory variables.",
+      "needs_local_calibration": true
+    },
+    {
+      "id": "environment.heating_low_temperature.001",
+      "action_type": "heating_low_temperature",
+      "condition_variables": [
+        "temperature_c",
+        "outside_temperature_c",
+        "growth_stage"
+      ],
+      "condition_description": "Review heating or heat-retention action when greenhouse temperature enters a low-temperature stress range for the current growth stage.",
+      "threshold_or_range": "Prototype trigger: inside temperature near or below 10-13 C, with stronger caution during flowering and fruiting.",
+      "expected_effect": "Reduce low-temperature growth delay and support stable flowering, fruiting, and ripening conditions.",
+      "risk_or_caution": "Heating decisions should consider energy cost, humidity rise after closing ventilation, and cultivar/growth-stage targets.",
+      "evidence_level": "manual_assumption",
+      "source_title": "Strawberry greenhouse environment and growth references",
+      "source_note": "Local markdown: 01_s13580-025-00677-z.md reports greenhouse temperature ranges during Seolhyang cultivation; 09_N0230540306.md notes growth response to seasonal low-to-high temperature changes.",
+      "needs_local_calibration": true
+    },
+    {
+      "id": "disease.environment_proxy.001",
+      "action_type": "disease_environment_risk_proxy",
+      "condition_variables": [
+        "humidity_pct",
+        "vpd_kpa",
+        "rain_probability_pct",
+        "leaf_wetness_hours",
+        "disease_spot_ratio"
+      ],
+      "condition_description": "Monitor environmental disease-risk proxy conditions when humidity, low VPD, rain, wet canopy, or scouting/image proxy signals increase.",
+      "threshold_or_range": "Prototype trigger: humidity above about 85%, VPD below about 0.35 kPa, rain probability above about 60%, or visible disease proxy above local threshold.",
+      "expected_effect": "Prioritize scouting and preventive review before disease pressure becomes severe.",
+      "risk_or_caution": "This is not actual disease prediction without disease labels; recommendations must say environmental disease risk proxy and require field confirmation.",
+      "evidence_level": "literature_assumption",
+      "source_title": "Greenhouse strawberry environment-risk and growth prediction references",
+      "source_note": "Local markdown: 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md includes RH, VPD, PAR, CO2, EC, and soil moisture variables; use only as proxy evidence unless labeled disease observations exist.",
+      "needs_local_calibration": true
+    },
+    {
+      "id": "harvest.monitoring.001",
+      "action_type": "harvest_monitoring",
+      "condition_variables": [
+        "ripe_fruit_ratio",
+        "coloring_pct",
+        "fruit_count",
+        "temperature_c",
+        "rain_probability_pct"
+      ],
+      "condition_description": "Monitor harvest timing using fruit ripening/coloring proxy, visible fruit count, and weather/temperature quality-risk conditions.",
+      "threshold_or_range": "Starting assumption: room-temperature harvest quality commonly uses about 80% coloring; cold-chain or low-temperature distribution may require higher coloring such as about 90%.",
+      "expected_effect": "Support harvest timing and reduce quality loss from under-ripeness, heat, or rain-delay risk.",
+      "risk_or_caution": "Coloring thresholds depend on cultivar, distribution temperature, market target, and measurement method.",
+      "evidence_level": "literature_assumption",
+      "source_title": "Determination of the Harvest Date and Ripening Phase of Seolhyang Strawberry",
+      "source_note": "Local markdown: 05_Determination_of_the_Harvest_Date_and_Ripening_Phase_of_Seolhyang_Strawberry.md is used for harvest coloring/ripening assumptions already reflected in simulation evidence tags.",
+      "needs_local_calibration": true
+    },
+    {
+      "id": "canopy.leaf_removal_caution.001",
+      "action_type": "leaf_removal_caution",
+      "condition_variables": [
+        "leaf_density",
+        "leaf_count",
+        "leaf_area_proxy",
+        "humidity_pct",
+        "old_or_diseased_leaf_level",
+        "days_since_leaf_pruning"
+      ],
+      "condition_description": "Consider only conservative leaf removal when canopy is dense or old/diseased leaves are present, while protecting photosynthetic leaf area.",
+      "threshold_or_range": "Prototype caution: avoid repeated or aggressive removal; removal around or above one-third of canopy, low leaf count, or low leaf-area proxy should downgrade recommendation.",
+      "expected_effect": "Improve canopy airflow and remove old/diseased leaves without damaging plant vigor.",
+      "risk_or_caution": "Excessive leaf removal can reduce photosynthetic area, plant vigor, and yield potential; default to monitoring unless evidence is strong.",
+      "evidence_level": "literature_assumption",
+      "source_title": "Effect of defoliation and runner removal on strawberry growth and production",
+      "source_note": "Local markdown: 12_s13580-014-0001-1.md reports that partial defoliation reduced leaf number and crown leaf area; use as a conservative caution rule.",
+      "needs_local_calibration": true
+    }
+  ]
+}

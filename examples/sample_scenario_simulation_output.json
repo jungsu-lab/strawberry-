@@ -1,0 +1,117 @@
+{
+  "summary": "v0 what-if scenario estimate for decision support; compare directions, not precise effects",
+  "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command.",
+  "scenarios": [
+    {
+      "action_type": "irrigation",
+      "expected_state_direction": [
+        "moisture likely increases",
+        "EC issue may dilute only if drainage is adequate"
+      ],
+      "potential_benefits": [
+        "water-stress risk may decrease during high VPD or radiation"
+      ],
+      "potential_risks": [
+        "humidity risk may increase",
+        "over-wet substrate risk if recent irrigation is ignored"
+      ],
+      "confidence": 0.56,
+      "evidence_references": [
+        {
+          "source_type": "literature_assumption",
+          "title": "Sensor-controlled fertigation management for higher yield and quality in greenhouse hydroponic strawberries; Solar-radiation and substrate-moisture fertigation study for Seolhyang strawberry",
+          "reference_id": "irrigation.solar_moisture_vpd.001",
+          "url": null,
+          "note": "Local markdown: 01_s13580-025-00677-z.md links Rad/VPD/LAI to transpiration; 08_N0090300416.md reports solar-radiation and substrate-moisture fertigation including 60% moisture and 100/150/250 J/cm2 treatments.",
+          "confidence": 0.62
+        }
+      ],
+      "assumptions": [
+        "directional v0 estimate based on literature/manual rules",
+        "local calibration and human review are required"
+      ],
+      "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command."
+    },
+    {
+      "action_type": "ventilation_dehumidification",
+      "expected_state_direction": [
+        "humidity may decrease",
+        "disease environmental risk may decrease"
+      ],
+      "potential_benefits": [
+        "wet-canopy pressure may decrease"
+      ],
+      "potential_risks": [
+        "temperature may drop if outside air is cold",
+        "substrate drying may accelerate"
+      ],
+      "confidence": 0.7,
+      "evidence_references": [
+        {
+          "source_type": "literature_assumption",
+          "title": "Strawberry growth/yield environment studies and Botrytis environment-risk references",
+          "reference_id": "environment.ventilation_dehumidification.001",
+          "url": null,
+          "note": "Local markdown: 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md uses RH, PAR, VPD, CO2, EC, and soil moisture as growth/yield predictors; simulator rules already separate environmental pressure from disease labels.",
+          "confidence": 0.62
+        }
+      ],
+      "assumptions": [
+        "directional v0 estimate based on literature/manual rules",
+        "local calibration and human review are required",
+        "model prediction considered after confidence gate: humidity_pct"
+      ],
+      "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command."
+    },
+    {
+      "action_type": "shading_high_temperature",
+      "expected_state_direction": [
+        "heat stress may decrease",
+        "water demand may decrease"
+      ],
+      "potential_benefits": [
+        "fruit and canopy heat load may decrease"
+      ],
+      "potential_risks": [
+        "photosynthesis may decrease if shading is excessive"
+      ],
+      "confidence": 0.5,
+      "evidence_references": [
+        {
+          "source_type": "literature_assumption",
+          "title": "Sensor-controlled fertigation management for greenhouse strawberries; strawberry environment-growth prediction studies",
+          "reference_id": "environment.shading_high_temperature.001",
+          "url": null,
+          "note": "Local markdown: 01_s13580-025-00677-z.md links radiation and VPD with transpiration; 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md treats temperature, PAR, VPD, CO2, and moisture as explanatory variables.",
+          "confidence": 0.62
+        }
+      ],
+      "assumptions": [
+        "directional v0 estimate based on literature/manual rules",
+        "local calibration and human review are required"
+      ],
+      "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command."
+    },
+    {
+      "action_type": "no_action",
+      "expected_state_direction": [
+        "current trend likely continues",
+        "EC issue remains unresolved",
+        "disease environmental risk may remain elevated"
+      ],
+      "potential_benefits": [
+        "avoids intervention side effects"
+      ],
+      "potential_risks": [
+        "existing stress signals may persist"
+      ],
+      "confidence": 0.42,
+      "evidence_references": [],
+      "assumptions": [
+        "directional v0 estimate based on literature/manual rules",
+        "local calibration and human review are required"
+      ],
+      "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command."
+    }
+  ]
+}

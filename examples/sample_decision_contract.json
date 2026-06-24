@@ -1,0 +1,121 @@
+{
+  "snapshot": {
+    "timestamp": "2025-06-20T09:00:00+09:00",
+    "temperature_c": 27.4,
+    "humidity_pct": 88.0,
+    "vpd_kpa": 0.49,
+    "radiation_w_m2": 520.0,
+    "cumulative_radiation_j_cm2": 142.0,
+    "co2_ppm": 610.0,
+    "substrate_moisture_pct": 58.0,
+    "root_zone_ec": 1.4,
+    "root_zone_ph": 6.1,
+    "drainage_ec": 1.9,
+    "drainage_ph": 6.3,
+    "feed_ec": 1.2,
+    "feed_ph": 6.0,
+    "drainage_ratio_pct": 35.0,
+    "weather_state": {
+      "rain_probability_pct": 20.0,
+      "expected_rain_mm": 0.0,
+      "outside_temperature_c": 25.0,
+      "outside_humidity_pct": 74.0
+    },
+    "growth_state": {
+      "growth_stage": "harvest",
+      "fruit_count": 58,
+      "ripe_fruit_ratio": 0.72,
+      "leaf_density": 0.82,
+      "disease_spot_ratio": 0.01
+    },
+    "recent_work_history": [
+      {
+        "timestamp": "2025-06-20T06:30:00+09:00",
+        "action_type": "irrigation",
+        "source": "farm_work_log",
+        "notes": "morning nutrient irrigation completed"
+      }
+    ]
+  },
+  "action_candidates": [
+    {
+      "action_type": "ventilation",
+      "target_window": "today_morning",
+      "rationale": "humidity remains high while VPD is low",
+      "constraints": [
+        "avoid aggressive ventilation during cold rain",
+        "human review required before actuator control"
+      ]
+    }
+  ],
+  "predictions": [
+    {
+      "target": "humidity_pct",
+      "horizon_hours": 3,
+      "predicted_value": 90.0,
+      "predicted_delta": 2.0,
+      "confidence": 0.54,
+      "model_used": "rule_adjusted_gam_prototype",
+      "fallback_used": false,
+      "metrics": {
+        "training_rows": 187,
+        "validation_mae": 0.31,
+        "baseline_mae": 0.52,
+        "validation_r2": 0.15,
+        "missing_feature_ratio": 0.08
+      }
+    }
+  ],
+  "recommendation": {
+    "action_type": "ventilation",
+    "priority": "medium",
+    "confidence": 0.62,
+    "reason": "High humidity and low VPD create disease-risk conditions; prediction keeps humidity above the rule threshold.",
+    "expected_effect": "Lower humidity and reduce canopy wetness risk while monitoring substrate moisture.",
+    "risks": [
+      "rapid ventilation can cool the greenhouse",
+      "prediction confidence is not high enough for autonomous control"
+    ],
+    "evidence_references": [
+      {
+        "source_type": "manual_rule",
+        "title": "Strawberry humidity and Botrytis risk rule",
+        "reference_id": "manual.botrytis.humidity_vpd",
+        "url": null,
+        "note": "Use as decision-support threshold, not automatic control proof.",
+        "confidence": 0.7
+      }
+    ],
+    "safety_flags": [
+      "decision_support_only",
+      "requires_human_review"
+    ],
+    "model_used": "rule_adjusted_gam_prototype",
+    "fallback_used": false,
+    "action_candidate": {
+      "action_type": "ventilation",
+      "target_window": "today_morning",
+      "rationale": "humidity remains high while VPD is low",
+      "constraints": [
+        "avoid aggressive ventilation during cold rain",
+        "human review required before actuator control"
+      ]
+    },
+    "prediction": {
+      "target": "humidity_pct",
+      "horizon_hours": 3,
+      "predicted_value": 90.0,
+      "predicted_delta": 2.0,
+      "confidence": 0.54,
+      "model_used": "rule_adjusted_gam_prototype",
+      "fallback_used": false,
+      "metrics": {
+        "training_rows": 187,
+        "validation_mae": 0.31,
+        "baseline_mae": 0.52,
+        "validation_r2": 0.15,
+        "missing_feature_ratio": 0.08
+      }
+    }
+  }
+}

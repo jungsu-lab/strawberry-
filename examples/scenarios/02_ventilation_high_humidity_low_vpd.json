@@ -1,0 +1,51 @@
+{
+  "scenario": {
+    "id": "ventilation_high_humidity_low_vpd",
+    "title": "Ventilation/dehumidification: high humidity with low VPD",
+    "expected_focus_action": "ventilation_dehumidification"
+  },
+  "snapshot": {
+    "timestamp": "2026-06-25T07:30:00+09:00",
+    "temperature_c": 22.8,
+    "humidity_pct": 93.0,
+    "vpd_kpa": 0.18,
+    "radiation_w_m2": 120.0,
+    "cumulative_radiation_j_cm2": 22.0,
+    "co2_ppm": 780.0,
+    "substrate_moisture_pct": 64.0,
+    "root_zone_ec": 1.5,
+    "root_zone_ph": 6.2,
+    "drainage_ec": 1.7,
+    "drainage_ph": 6.4,
+    "feed_ec": 1.1,
+    "feed_ph": 6.0,
+    "drainage_ratio_pct": 38.0,
+    "weather_state": {
+      "rain_probability_pct": 65.0,
+      "expected_rain_mm": 4.0,
+      "outside_temperature_c": 18.0,
+      "outside_humidity_pct": 91.0
+    },
+    "growth_state": {
+      "growth_stage": "flowering",
+      "fruit_count": 28,
+      "ripe_fruit_ratio": 0.12,
+      "leaf_density": 0.83,
+      "disease_spot_ratio": 0.01
+    },
+    "recent_work_history": [
+      {
+        "timestamp": "2026-06-24T08:00:00+09:00",
+        "action_type": "scouting",
+        "source": "farm_work_log",
+        "notes": "no confirmed disease labels"
+      }
+    ]
+  },
+  "candidate_actions": [
+    "ventilation_dehumidification",
+    "heating_low_temperature",
+    "no_action"
+  ],
+  "predictions": []
+}

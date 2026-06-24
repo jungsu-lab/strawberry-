@@ -40,11 +40,13 @@ class SBAPIClient:
 
     class _NetworkError(_InternalError):
         def __init__(self, code, message):
+            super().__init__(message)
             self.code = code
             self.message = message
 
     class _ModbusExcept(_InternalError):
         def __init__(self, code):
+            super().__init__(code)
             self.code = code
 
     def __init__(self, key, header=True, host='121.134.228.36', port=9900, timeout=30.0):
@@ -80,8 +82,8 @@ class SBAPIClient:
         self.timeout = timeout
 
     def __repr__(self):
-        r_str = 'SBAPIClient(key=\'%s\', host=\'%s\', port=%d, unit_id=%d, timeout=%.2f)'
-        r_str %= (self._key, self.host, self.port, self.unit_id, self.timeout)
+        r_str = 'SBAPIClient(key=\'***\', host=\'%s\', port=%d, unit_id=%d, timeout=%.2f)'
+        r_str %= (self.host, self.port, self.unit_id, self.timeout)
         return r_str
 
     def __del__(self):
@@ -320,19 +322,22 @@ class SBAPIClient:
         # send
         try:
             self._recved = None
+            if self._host is None:
+                raise SBAPIClient._NetworkError(MB_SEND_ERR, "host is not configured")
             url = "http://" + self._host + ":" + str(self._port) + "/" + ("read" if self._isread else "write")
             params = {"command": frame.hex()}
             headers = {"Authorization": self._key, "Content-Type": "application/json"}
             #print(params)
-            x = requests.post(url, headers=headers, json=params)
+            x = requests.post(url, headers=headers, json=params, timeout=self._timeout)
             #print(x.text)
             tmp = x.json()
             if tmp["result"] is True:
                 self._recved = bytes.fromhex(tmp["response"])
             else:
-                print("error", tmp)
                 raise SBAPIClient._NetworkError(MB_SEND_ERR, 'send error')
-        except Exception as ex: 
+        except SBAPIClient._NetworkError:
+            raise
+        except (requests.RequestException, ValueError, KeyError) as ex:
             raise SBAPIClient._NetworkError(MB_SEND_ERR, str(ex))
 
     def _send_pdu(self, pdu):

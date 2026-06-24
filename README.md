@@ -26,6 +26,8 @@ BerryNext AI는 이 라이브러리 위에 생육단계, 온실환경, 이미지
 
 ## 사용법
 
+Python 3.11 이상에서 실행한다. BerryNext 작업 추천 모듈이 표준 라이브러리 `StrEnum`을 사용한다.
+
 ### 초기화
 
 팀별로 할당된 키를 사용하여 모듈을 초기화한다. Authorization key 는 팀별로 할당되는 비밀키이다.
@@ -129,6 +131,36 @@ examples/greenhouse_simulator.py 에 샘플이 있다.
 
 python3 -m examples.greenhouse_simulator
 
+### 온실 시뮬레이션 시나리오 비교
+
+논문 기반 규칙 시뮬레이터를 여러 날에 걸쳐 실행해 무작업, 관수 중심, 방제+적엽, 즉시 수확, 수확 지연 시나리오의 최종 상태를 비교한다.
+
+examples/greenhouse_scenario_compare.py 에 샘플이 있다.
+테스트는 현재 위치에서 다음과 같이 한다.
+
+### BerryNext 데모 시나리오
+
+딸기 스마트팜 의사결정 보조 시스템의 현실적인 데모 입력은 `examples/scenarios/`에 있다.
+5개 상황(고 VPD+저수분, 고습+저 VPD, 고 EC, 저온, 적엽 주의)을 추천 모듈과 what-if 시뮬레이터로 함께 실행한다.
+
+python3 scripts/run_demo_scenarios.py
+
+결과는 `artifacts/demo_outputs/summary.json`과 `artifacts/demo_outputs/demo_report.md`에 저장된다.
+자세한 설명은 `docs/demo_scenarios.md`를 참고한다.
+
+python3 -m examples.greenhouse_scenario_compare
+
+### 온실 시뮬레이터 대시보드
+
+Streamlit 대시보드에서 초기 온실 상태, 환경 조건, 작업 강도, 비교 시나리오를 조정하고 배지수분, 배액 EC, 병해 위험, 상품 수확량, 품질 위험 변화를 그래프로 확인한다.
+결과 표에는 시나리오별 최종 상태와 논문 규칙의 `notes`, `warnings`, `evidence_tags`가 함께 표시된다.
+
+실행:
+
+```bash
+streamlit run dashboard/greenhouse_dashboard.py
+```
+
 ### 샘플 JSON으로 오늘 할 일 추천하기
 
 원본 엑셀과 대용량 CSV는 GitHub에 올리지 않는다. 대신 하루 단위로 정규화된 작은 JSON을 `FarmWorkContext`로 변환해 의사결정 엔진에 넣는 흐름을 제공한다.
@@ -152,5 +184,3 @@ python3 -m examples.build_daily_context path/to/daily_context.json
 ```
 
 이 JSON은 나중에 `딸기_AI_의사결정_통합정리본/01_핵심_운영데이터`의 전기/펠릿 엑셀을 일 단위로 집계한 결과와 같은 계약으로 사용한다.
-
-
