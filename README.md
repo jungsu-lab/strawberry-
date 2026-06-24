@@ -119,6 +119,16 @@ examples/daily_farmwork.py 에 샘플이 있다.
 
 python3 -m examples.daily_farmwork
 
+### 논문 기반 규칙 시뮬레이터
+
+관수, 방제, 수확, 적엽 작업을 실행했을 때 배지수분, 배액 EC, 병해 위험, 과실 수, 상품 수확량, 엽밀도, 환기, 품질 위험이 어떻게 변하는지 규칙 기반으로 확인한다.
+논문 노트의 설향 EC 후보, 적산일사/배지수분/VWC 관수 트리거, 40-50% 배액률 목표, 60% 개화/엽면젖음 병해 위험, 유통온도별 착색률 수확 기준, 런너 제거와 과도 적엽 제한을 `evidence_tags`, `warnings`, `metrics`, `confidence`로 함께 남긴다.
+
+examples/greenhouse_simulator.py 에 샘플이 있다.
+테스트는 현재 위치에서 다음과 같이 한다.
+
+python3 -m examples.greenhouse_simulator
+
 ### 샘플 JSON으로 오늘 할 일 추천하기
 
 원본 엑셀과 대용량 CSV는 GitHub에 올리지 않는다. 대신 하루 단위로 정규화된 작은 JSON을 `FarmWorkContext`로 변환해 의사결정 엔진에 넣는 흐름을 제공한다.
