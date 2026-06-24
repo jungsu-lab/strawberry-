@@ -141,7 +141,9 @@ def harvest_coloring_warning(distribution_type: DistributionType) -> str:
 
 
 def expected_days_to_100_coloring(state: GreenhouseState) -> float | None:
-    if state.coloring_pct is None or state.coloring_pct >= 100.0:
+    if state.coloring_pct is None:
+        return None
+    if state.coloring_pct >= 100.0:
         return 0.0
     daily_rate = coloring_daily_rate(state.distribution_type)
     return float(ceil((100.0 - state.coloring_pct) / daily_rate))

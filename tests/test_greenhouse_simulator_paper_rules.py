@@ -199,6 +199,34 @@ class GreenhouseSimulatorPaperRulesTest(unittest.TestCase):
         self.assertIn(("expected_days_to_100_coloring", 3.0), step.metrics)
         self.assertGreater(step.state.quality_risk, state.quality_risk)
 
+    def test_missing_coloring_does_not_emit_zero_day_harvest_metric(self):
+        state = GreenhouseState(
+            substrate_moisture_pct=55.0,
+            drain_ec=1.7,
+            disease_risk=0.28,
+            ripe_fruit_ratio=0.65,
+            fruit_count=70,
+            leaf_density=0.7,
+            ventilation_score=0.52,
+            yield_potential=1.0,
+            marketable_yield_kg=0.0,
+            quality_risk=0.1,
+            coloring_pct=None,
+            distribution_type=DistributionType.ROOM_TEMP,
+        )
+        environment = GreenhouseEnvironment(
+            solar_radiation_w_m2=420.0,
+            vpd_kpa=0.95,
+            humidity_pct=72.0,
+            rain_probability=20.0,
+            inside_temperature_c=24.0,
+        )
+
+        step = GreenhouseSimulator().apply(state, environment, HarvestWork(pick_ratio=0.4))
+
+        self.assertEqual(step.metrics, ())
+        self.assertIn("room-temperature harvest below 80% coloring has marketability risk", step.warnings)
+
     def test_runner_removal_reduces_runner_sink_and_improves_yield_potential(self):
         state = GreenhouseState(
             substrate_moisture_pct=57.0,
