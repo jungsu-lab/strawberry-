@@ -68,6 +68,7 @@ class DemoScenarioReport:
     input_path: Path
     scenario: DemoScenario
     recommendations: tuple[RecommendationResult, ...]
+    auxiliary_alerts: tuple[RecommendationResult, ...]
     scenario_simulation: ScenarioSimulationReport
 
 
@@ -88,7 +89,9 @@ def run_demo_scenarios(
         scenario = load_demo_scenario(scenario_path)
         snapshot = greenhouse_snapshot_from_json(scenario.snapshot)
         predictions = tuple(prediction_result_from_json(item) for item in scenario.predictions)
-        recommendations = ActionRecommendationEngine(evidence_rules).recommend(snapshot, predictions)
+        engine = ActionRecommendationEngine(evidence_rules)
+        recommendations = engine.recommend(snapshot, predictions)
+        auxiliary_alerts = engine.auxiliary_alerts(snapshot, predictions)
         simulation = simulate_scenarios(
             ScenarioSimulationRequest(
                 snapshot=snapshot,
@@ -100,7 +103,7 @@ def run_demo_scenarios(
                 predictions=predictions,
             )
         )
-        report = DemoScenarioReport(scenario_path, scenario, recommendations, simulation)
+        report = DemoScenarioReport(scenario_path, scenario, recommendations, auxiliary_alerts, simulation)
         write_scenario_output(output_dir / f"{scenario.scenario_id}.json", report)
         reports.append(report)
     result = DemoRunResult(output_dir=output_dir, scenario_reports=tuple(reports))
@@ -163,6 +166,9 @@ def demo_scenario_report_to_json(report: DemoScenarioReport) -> JsonObject:
         "recommendations": [
             recommendation_to_json(item) for item in report.recommendations
         ],
+        "auxiliary_alerts": [
+            recommendation_to_json(item) for item in report.auxiliary_alerts
+        ],
         "what_if_simulation": scenario_report_to_json(report.scenario_simulation),
     }
 
@@ -201,6 +207,14 @@ def _markdown_section(report: DemoScenarioReport) -> list[str]:
         )
         lines.append(f"    - Risks: {'; '.join(item.risks)}")
         lines.append(f"    - Safety: {', '.join(item.safety_flags)}")
+    if report.auxiliary_alerts:
+        lines.append("- Auxiliary alerts:")
+        for item in report.auxiliary_alerts:
+            lines.append(
+                f"  - `{item.action_type}` {item.priority} confidence={item.confidence}: {item.reason}"
+            )
+            lines.append(f"    - Risks: {'; '.join(item.risks)}")
+            lines.append(f"    - Safety: {', '.join(item.safety_flags)}")
     lines.append("- What-if directions:")
     for scenario in report.scenario_simulation.scenarios:
         lines.append(f"  - `{scenario.action_type}`: {'; '.join(scenario.expected_state_direction)}")
@@ -211,6 +225,9 @@ def _markdown_section(report: DemoScenarioReport) -> list[str]:
 
 def _focus_recommendation(report: DemoScenarioReport) -> RecommendationResult | None:
     for item in report.recommendations:
+        if item.action_type == report.scenario.expected_focus_action:
+            return item
+    for item in report.auxiliary_alerts:
         if item.action_type == report.scenario.expected_focus_action:
             return item
     return None

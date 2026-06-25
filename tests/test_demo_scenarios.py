@@ -14,13 +14,15 @@ EXPECTED_ACTIONS = {
     "02_ventilation_high_humidity_low_vpd.json": "ventilation_dehumidification",
     "03_nutrient_high_ec.json": "nutrient_ec_check",
     "04_heating_low_night_temperature.json": "heating_low_temperature",
+}
+EXPECTED_AUXILIARY_ALERTS = {
     "05_leaf_removal_caution.json": "leaf_removal_caution",
 }
 
 
 class DemoScenariosTest(unittest.TestCase):
     def test_demo_scenario_fixtures_exist_with_markdown_expectations(self) -> None:
-        for json_name in EXPECTED_ACTIONS:
+        for json_name in (*EXPECTED_ACTIONS, *EXPECTED_AUXILIARY_ALERTS):
             scenario_path = DEFAULT_SCENARIO_DIR / json_name
             expected_path = scenario_path.with_suffix(".md")
 
@@ -36,10 +38,24 @@ class DemoScenariosTest(unittest.TestCase):
 
             self.assertEqual(len(result.scenario_reports), 5)
             for report in result.scenario_reports:
-                expected_action = EXPECTED_ACTIONS[report.input_path.name]
+                expected_action = EXPECTED_ACTIONS.get(report.input_path.name)
+                expected_alert = EXPECTED_AUXILIARY_ALERTS.get(report.input_path.name)
+                recommendation_actions = [item.action_type for item in report.recommendations]
+                auxiliary_actions = [item.action_type for item in report.auxiliary_alerts]
+                if expected_action is not None:
+                    self.assertIn(expected_action, recommendation_actions, report.input_path.name)
+                if expected_alert is not None:
+                    self.assertIn(expected_alert, auxiliary_actions, report.input_path.name)
+                    self.assertNotIn(expected_alert, recommendation_actions, report.input_path.name)
                 self.assertTrue(
-                    any(item.action_type == expected_action for item in report.recommendations),
-                    report.input_path.name,
+                    set(recommendation_actions)
+                    <= {
+                        "irrigation",
+                        "nutrient_ec_check",
+                        "ventilation_dehumidification",
+                        "shading_high_temperature",
+                        "heating_low_temperature",
+                    }
                 )
                 self.assertTrue(report.scenario_simulation.scenarios)
                 self.assertTrue(
@@ -58,6 +74,7 @@ class DemoScenariosTest(unittest.TestCase):
             self.assertEqual(len(summary["scenarios"]), 5)
             self.assertIn("Irrigation check", markdown)
             self.assertIn("Focus recommendation:", markdown)
+            self.assertIn("Auxiliary alerts:", markdown)
             self.assertIn("- Full ranking highlights:", markdown)
             self.assertIn("Rule-based assumptions", markdown)
             self.assertIn("not a validated causal simulation", markdown)

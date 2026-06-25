@@ -2,7 +2,7 @@
   "scenario_id": "heating_low_night_temperature",
   "title": "Heating/thermal protection: low night temperature",
   "expected_focus_action": "heating_low_temperature",
-  "input_path": "/home/jungsu0327/strawberry-/examples/scenarios/04_heating_low_night_temperature.json",
+  "input_path": "/home/jungsu/strawberry-/examples/scenarios/04_heating_low_night_temperature.json",
   "recommendations": [
     {
       "action_type": "heating_low_temperature",
@@ -51,26 +51,6 @@
       "fallback_used": true
     },
     {
-      "action_type": "disease_environment_risk_proxy",
-      "priority": "low",
-      "confidence": 0.38,
-      "reason": "environmental disease risk proxy review, VPD is low",
-      "expected_effect": "prioritize scouting and preventive review without claiming disease prediction",
-      "risks": [
-        "not actual disease prediction without disease labels"
-      ],
-      "evidence_references": [
-        "disease.environment_proxy.001"
-      ],
-      "safety_flags": [
-        "decision_support_only",
-        "requires_human_review",
-        "requires_field_confirmation"
-      ],
-      "model_used": "literature_manual_rules",
-      "fallback_used": true
-    },
-    {
       "action_type": "irrigation",
       "priority": "low",
       "confidence": 0.2,
@@ -109,25 +89,6 @@
       "fallback_used": true
     },
     {
-      "action_type": "ph_check",
-      "priority": "low",
-      "confidence": 0.2,
-      "reason": "pH signal is inside the starting monitoring range",
-      "expected_effect": "support nutrient availability by confirming pH drift with calibrated sensors",
-      "risks": [
-        "pH correction should be gradual and based on repeated measurements"
-      ],
-      "evidence_references": [
-        "nutrient.ph_check.001"
-      ],
-      "safety_flags": [
-        "decision_support_only",
-        "requires_human_review"
-      ],
-      "model_used": "literature_manual_rules",
-      "fallback_used": true
-    },
-    {
       "action_type": "shading_high_temperature",
       "priority": "low",
       "confidence": 0.2,
@@ -149,50 +110,9 @@
       ],
       "model_used": "literature_manual_rules",
       "fallback_used": true
-    },
-    {
-      "action_type": "harvest_monitoring",
-      "priority": "low",
-      "confidence": 0.2,
-      "reason": "harvest signal is weak; continue monitoring",
-      "expected_effect": "support harvest timing review using ripening and quality-risk signals",
-      "risks": [
-        "market target and distribution temperature can change harvest thresholds",
-        "usable training rows are below the configured minimum"
-      ],
-      "evidence_references": [
-        "harvest.monitoring.001"
-      ],
-      "safety_flags": [
-        "decision_support_only",
-        "requires_human_review",
-        "insufficient_training_rows",
-        "insufficient_data_fallback",
-        "rule_based_fallback"
-      ],
-      "model_used": "literature_manual_rules",
-      "fallback_used": true
-    },
-    {
-      "action_type": "leaf_removal_caution",
-      "priority": "low",
-      "confidence": 0.2,
-      "reason": "cautious leaf removal review only",
-      "expected_effect": "improve canopy airflow only after confirming plant vigor and leaf area",
-      "risks": [
-        "avoid aggressive or repeated leaf removal that reduces plant vigor"
-      ],
-      "evidence_references": [
-        "canopy.leaf_removal_caution.001"
-      ],
-      "safety_flags": [
-        "decision_support_only",
-        "requires_human_review"
-      ],
-      "model_used": "literature_manual_rules",
-      "fallback_used": true
     }
   ],
+  "auxiliary_alerts": [],
   "what_if_simulation": {
     "summary": "v0 what-if scenario estimate for decision support; compare directions, not precise effects",
     "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command.",
@@ -213,11 +133,11 @@
         "confidence": 0.52,
         "evidence_references": [
           {
-            "source_type": "manual_assumption",
+            "source_type": "prototype_assumption",
             "title": "Strawberry greenhouse environment and growth references",
             "reference_id": "environment.heating_low_temperature.001",
             "url": null,
-            "note": "Local markdown: 01_s13580-025-00677-z.md reports greenhouse temperature ranges during Seolhyang cultivation; 09_N0230540306.md notes growth response to seasonal low-to-high temperature changes.",
+            "note": "Prototype/manual-review-needed rule. Local markdown: 01_s13580-025-00677-z.md reports greenhouse temperature ranges during Seolhyang cultivation; 09_N0230540306.md notes growth response to seasonal low-to-high temperature changes.",
             "confidence": 0.62
           }
         ],
@@ -244,11 +164,11 @@
         "confidence": 0.58,
         "evidence_references": [
           {
-            "source_type": "literature_assumption",
+            "source_type": "prototype_assumption",
             "title": "Strawberry growth/yield environment studies and Botrytis environment-risk references",
             "reference_id": "environment.ventilation_dehumidification.001",
             "url": null,
-            "note": "Local markdown: 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md uses RH, PAR, VPD, CO2, EC, and soil moisture as growth/yield predictors; simulator rules already separate environmental pressure from disease labels.",
+            "note": "Prototype/manual-review-needed rule. Local markdown: 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md uses RH, PAR, VPD, CO2, EC, and soil moisture as growth/yield predictors; simulator rules already separate environmental pressure from disease labels.",
             "confidence": 0.62
           }
         ],

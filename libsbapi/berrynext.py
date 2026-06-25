@@ -148,7 +148,7 @@ class IrrigationDecisionEngine:
 
 
 class DiseaseRiskDecisionEngine:
-    """Estimate disease risk and recommend prevention-oriented actions."""
+    """Estimate environmental disease-risk proxy and suggest scouting."""
 
     def recommend(self, snapshot: GreenhouseSnapshot) -> Recommendation:
         vpd = compute_vpd_kpa(snapshot.inside_temperature_c, snapshot.inside_humidity_pct)
@@ -187,9 +187,10 @@ class DiseaseRiskDecisionEngine:
         score = _clamp(score)
         action = "monitor"
         if score >= 0.75:
-            action = "prioritize_scouting_and_prepare_control"
+            action = "prioritize_disease_risk_scouting"
         elif score >= 0.45:
             action = "increase_ventilation_and_scout"
+        safeguards.append("environmental proxy only; not actual disease prediction")
 
         return Recommendation(
             action=action,
@@ -247,7 +248,7 @@ class HarvestDecisionEngine:
 
 
 class BerryNextDecisionEngine:
-    """Bundle the three MVP engines: irrigation, disease, and harvest."""
+    """Legacy rule helpers with primary actions separated from auxiliary alerts."""
 
     def __init__(self):
         self.irrigation = IrrigationDecisionEngine()
@@ -255,9 +256,16 @@ class BerryNextDecisionEngine:
         self.harvest = HarvestDecisionEngine()
 
     def recommend(self, snapshot: GreenhouseSnapshot) -> List[Recommendation]:
-        recommendations = [
-            self.irrigation.recommend(snapshot),
+        recommendations = [self.irrigation.recommend(snapshot)]
+        return sorted(recommendations, key=lambda item: item.score, reverse=True)
+
+    def auxiliary_alerts(self, snapshot: GreenhouseSnapshot) -> List[Recommendation]:
+        alerts = [
             self.disease.recommend(snapshot),
             self.harvest.recommend(snapshot),
         ]
-        return sorted(recommendations, key=lambda item: item.score, reverse=True)
+        return sorted(
+            [item for item in alerts if item.score >= 0.35],
+            key=lambda item: item.score,
+            reverse=True,
+        )

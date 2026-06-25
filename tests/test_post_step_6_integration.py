@@ -21,10 +21,12 @@ class PostStep6IntegrationTest(unittest.TestCase):
         evidence_rules = load_evidence_rules()
         prediction = sample.predictions[0]
 
-        recommendations = ActionRecommendationEngine(evidence_rules).recommend(
+        engine = ActionRecommendationEngine(evidence_rules)
+        recommendations = engine.recommend(
             sample.snapshot,
             prediction=prediction,
         )
+        auxiliary_alerts = engine.auxiliary_alerts(sample.snapshot, prediction=prediction)
         scenario_report = simulate_scenarios(
             ScenarioSimulationRequest(
                 snapshot=sample.snapshot,
@@ -39,12 +41,23 @@ class PostStep6IntegrationTest(unittest.TestCase):
             )
         )
 
-        self.assertGreaterEqual(len(recommendations), 9)
-        self.assertTrue(any(item.action_type == "disease_environment_risk_proxy" for item in recommendations))
+        self.assertEqual(
+            {item.action_type for item in recommendations},
+            {
+                "irrigation",
+                "nutrient_ec_check",
+                "ventilation_dehumidification",
+                "shading_high_temperature",
+                "heating_low_temperature",
+            },
+        )
+        self.assertFalse(any(item.action_type == "disease_environment_risk_proxy" for item in recommendations))
+        self.assertTrue(any(item.action_type == "disease_environment_risk_proxy" for item in auxiliary_alerts))
         self.assertTrue(all(_has_required_recommendation_fields(item) for item in recommendations))
+        self.assertTrue(all(_has_required_recommendation_fields(item) for item in auxiliary_alerts))
         model_actions = {
             item.action_type
-            for item in recommendations
+            for item in (*recommendations, *auxiliary_alerts)
             if item.model_used == "rule_adjusted_gam_prototype"
         }
         self.assertEqual(
@@ -58,7 +71,7 @@ class PostStep6IntegrationTest(unittest.TestCase):
         self.assertTrue(
             all(
                 item.fallback_used
-                for item in recommendations
+                for item in (*recommendations, *auxiliary_alerts)
                 if item.action_type not in model_actions
             )
         )

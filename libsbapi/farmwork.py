@@ -64,6 +64,7 @@ class DailyFarmWorkPlan:
     summary: str
     tasks: list[FarmWorkTask]
     data_sources: tuple[str, ...]
+    auxiliary_alerts: list[FarmWorkTask] = field(default_factory=list)
 
 
 HARVEST_STAGES: Final = frozenset({CropGrowthStage.FRUITING, CropGrowthStage.HARVEST})
@@ -77,6 +78,13 @@ TASK_TIE_BREAK: Final = {
     FarmWorkType.IRRIGATION: 2,
     FarmWorkType.LEAF_PRUNING: 1,
 }
+AUXILIARY_ALERT_TYPES: Final = frozenset(
+    {
+        FarmWorkType.DISEASE_CONTROL,
+        FarmWorkType.HARVEST,
+        FarmWorkType.LEAF_PRUNING,
+    }
+)
 
 
 def _clamp(value: float) -> float:
@@ -140,36 +148,48 @@ class DailyFarmWorkDecisionEngine:
                 "관수/양액 점검",
                 irrigation,
             ),
+        ]
+        auxiliary_alerts = [
             _task_from_recommendation(
                 FarmWorkType.DISEASE_CONTROL,
-                "예찰 후 방제 준비",
+                "병해 위험 예찰 알림",
                 disease,
             ),
             _task_from_recommendation(
                 FarmWorkType.HARVEST,
-                "수확 우선순위 확인",
+                "수확 가능성 알림",
                 harvest,
             ),
         ]
         if leaf_pruning.score >= 0.35:
-            tasks.append(
+            auxiliary_alerts.append(
                 _task_from_recommendation(
                     FarmWorkType.LEAF_PRUNING,
-                    "적엽 작업 검토",
+                    "적엽 검토 알림",
                     leaf_pruning,
                 )
             )
 
         visible_tasks = [task for task in tasks if task.score >= 0.35]
+        visible_alerts = [
+            task for task in auxiliary_alerts
+            if task.score >= 0.35
+        ]
         ranked = sorted(
             visible_tasks,
             key=lambda task: (task.score, TASK_TIE_BREAK[task.work_type]),
             reverse=True,
         )
+        ranked_alerts = sorted(
+            visible_alerts,
+            key=lambda task: (task.score, TASK_TIE_BREAK[task.work_type]),
+            reverse=True,
+        )
         return DailyFarmWorkPlan(
-            summary=self._summary(ranked),
+            summary=self._summary(ranked, ranked_alerts),
             tasks=ranked,
             data_sources=WORK_SOURCE_LABELS,
+            auxiliary_alerts=ranked_alerts,
         )
 
     def _disease_recommendation(self, context: FarmWorkContext) -> Recommendation:
@@ -187,13 +207,18 @@ class DailyFarmWorkDecisionEngine:
             and context.history.days_since_disease_control >= 10
             and base.score >= 0.45
         ):
-            score += 0.12
-            reasons.append("disease-control interval is long")
-            safeguards.append("confirm symptoms before chemical control")
+            score += 0.08
+            reasons.append("field confirmation interval is long")
+        if base.score >= 0.45 or context.history.days_since_scouting is not None:
+            safeguards.append("scouting/checking required before any treatment decision")
+            if "environmental proxy only; not actual disease prediction" not in safeguards:
+                safeguards.append("environmental proxy only; not actual disease prediction")
+        if base.score >= 0.45:
+            reasons.append("병해 환경 위험 proxy 신호가 있어 환기 추천과 함께 예찰을 권장합니다")
 
         score = _clamp(score)
         return Recommendation(
-            action="scout_and_prepare_disease_control",
+            action="disease_risk_scouting_alert",
             priority=_priority(score),
             score=round(score, 3),
             reason=", ".join(reasons),
@@ -211,15 +236,19 @@ class DailyFarmWorkDecisionEngine:
             reasons.append("growth stage is in fruiting or harvest window")
 
         if context.history.days_since_harvest is not None and context.history.days_since_harvest >= 2:
-            score += 0.08
-            reasons.append("harvest interval is due")
+            if base.score >= 0.15 or context.growth_stage in HARVEST_STAGES:
+                score += 0.08
+                reasons.append("harvest interval is due")
 
         score = _clamp(score)
         return Recommendation(
-            action="plan_harvest_today",
+            action="harvest_possibility_alert",
             priority=_priority(score),
             score=round(score, 3),
             reason=", ".join(reasons),
+            safeguards=[
+                "reliable harvest judgment requires image, coloring, fruit count, or growth data",
+            ],
         )
 
     def _leaf_pruning_recommendation(self, context: FarmWorkContext) -> Recommendation:
@@ -251,12 +280,21 @@ class DailyFarmWorkDecisionEngine:
             priority=_priority(score),
             score=round(score, 3),
             reason=", ".join(reasons) or "canopy management signal is not strong",
-            safeguards=safeguards,
+            safeguards=[
+                *safeguards,
+                "avoid aggressive leaf removal without image or canopy evidence",
+            ],
         )
 
     @staticmethod
-    def _summary(tasks: list[FarmWorkTask]) -> str:
-        if not tasks:
+    def _summary(tasks: list[FarmWorkTask], auxiliary_alerts: list[FarmWorkTask]) -> str:
+        if not tasks and not auxiliary_alerts:
             return "오늘은 강한 작업 신호가 없어 모니터링 중심으로 운영합니다."
+        if not tasks:
+            top_alerts = ", ".join(task.title for task in auxiliary_alerts[:3])
+            return f"오늘 Level 1 추천은 모니터링 중심이며, 보조 알림은 {top_alerts}입니다."
         top_titles = ", ".join(task.title for task in tasks[:3])
-        return f"오늘 우선 작업은 {top_titles}입니다."
+        if not auxiliary_alerts:
+            return f"오늘 Level 1 추천은 {top_titles}입니다."
+        top_alerts = ", ".join(task.title for task in auxiliary_alerts[:3])
+        return f"오늘 Level 1 추천은 {top_titles}입니다. 보조 알림은 {top_alerts}입니다."

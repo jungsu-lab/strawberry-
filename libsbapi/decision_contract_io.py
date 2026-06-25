@@ -123,12 +123,16 @@ def prediction_result_from_json(data: JsonObject) -> PredictionResult:
     return PredictionResult(
         target=_required_str(data, "target"),
         horizon_hours=_int_field(data, "horizon_hours") or 0,
-        predicted_value=_float_field(data, "predicted_value"),
-        predicted_delta=_float_field(data, "predicted_delta"),
         confidence=_float_field(data, "confidence") or 0.0,
         model_used=_required_str(data, "model_used"),
+        predicted_value=_float_field(data, "predicted_value"),
+        predicted_delta=_float_field(data, "predicted_delta"),
+        current_value=_float_field(data, "current_value"),
         fallback_used=_bool_field(data, "fallback_used") or False,
+        fallback_reason=_optional_str(data, "fallback_reason"),
+        training_rows=_int_field(data, "training_rows"),
         metrics=_metric_items(_object_field(data, "metrics", required=False)),
+        metric_summary=_metric_mapping(_object_field(data, "metric_summary", required=False)),
     )
 
 
@@ -289,3 +293,16 @@ def _metric_items(data: JsonObject) -> tuple[tuple[str, float], ...]:
             case _:
                 raise DecisionContractError(f"metrics.{key}", "must be a number")
     return tuple(metrics)
+
+
+def _metric_mapping(data: JsonObject) -> dict[str, float]:
+    metrics: dict[str, float] = {}
+    for key, value in data.items():
+        match value:
+            case bool():
+                raise DecisionContractError(f"metric_summary.{key}", "must be a number")
+            case int() | float():
+                metrics[key] = float(value)
+            case _:
+                raise DecisionContractError(f"metric_summary.{key}", "must be a number")
+    return metrics

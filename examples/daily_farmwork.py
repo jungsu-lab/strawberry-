@@ -41,11 +41,19 @@ def main():
     plan = DailyFarmWorkDecisionEngine().plan_today(context)
     print(plan.summary)
     print("data:", ", ".join(plan.data_sources))
+    print("Level 1 recommendations:")
     for task in plan.tasks:
         print(f"[{task.priority}] {task.title} ({task.timing}) score={task.score}")
         print(f"  reason: {task.reason}")
         if task.safeguards:
             print(f"  safeguards: {', '.join(task.safeguards)}")
+    if plan.auxiliary_alerts:
+        print("Auxiliary alerts:")
+        for alert in plan.auxiliary_alerts:
+            print(f"[{alert.priority}] {alert.title} ({alert.timing}) score={alert.score}")
+            print(f"  reason: {alert.reason}")
+            if alert.safeguards:
+                print(f"  safeguards: {', '.join(alert.safeguards)}")
 
 
 if __name__ == "__main__":

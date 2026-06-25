@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from collections.abc import Callable, Mapping
 from typing import Final, Literal, TypeAlias, override
 
@@ -12,18 +12,36 @@ from libsbapi.prediction_targets import prediction_relates_to_action
 
 ScenarioAction = Literal[
     "irrigation",
+    "no_irrigation",
+    "lower_ec_nutrient_adjustment",
+    "raise_ec_check_supplied_ec",
     "ventilation_dehumidification",
+    "ventilation",
+    "no_ventilation",
     "shading_high_temperature",
+    "shading",
+    "no_shading",
     "heating_low_temperature",
+    "heat_preservation_heating_review",
+    "no_heat_preservation",
     "nutrient_ec_check",
     "no_action",
 ]
 SUPPORTED_ACTIONS: Final = frozenset(
     {
         "irrigation",
+        "no_irrigation",
+        "lower_ec_nutrient_adjustment",
+        "raise_ec_check_supplied_ec",
         "ventilation_dehumidification",
+        "ventilation",
+        "no_ventilation",
         "shading_high_temperature",
+        "shading",
+        "no_shading",
         "heating_low_temperature",
+        "heat_preservation_heating_review",
+        "no_heat_preservation",
         "nutrient_ec_check",
         "no_action",
     }
@@ -108,7 +126,10 @@ def _simulate_candidate(
     candidate: ScenarioCandidate,
     context: ScenarioContext,
 ) -> ScenarioSimulationResult:
-    return SCENARIO_SIMULATORS[candidate.action_type](context)
+    result = SCENARIO_SIMULATORS[candidate.action_type](context)
+    if result.action_type != candidate.action_type:
+        return replace(result, action_type=candidate.action_type)
+    return result
 
 
 def _irrigation(context: ScenarioContext) -> ScenarioSimulationResult:
@@ -261,9 +282,18 @@ def _usable_prediction_confidences(
 
 SCENARIO_SIMULATORS: Final[Mapping[ScenarioAction, ScenarioSimulator]] = {
     "irrigation": _irrigation,
+    "no_irrigation": _no_action,
+    "lower_ec_nutrient_adjustment": _ec_check,
+    "raise_ec_check_supplied_ec": _ec_check,
     "ventilation_dehumidification": _ventilation,
+    "ventilation": _ventilation,
+    "no_ventilation": _no_action,
     "shading_high_temperature": _shading,
+    "shading": _shading,
+    "no_shading": _no_action,
     "heating_low_temperature": _heating,
+    "heat_preservation_heating_review": _heating,
+    "no_heat_preservation": _no_action,
     "nutrient_ec_check": _ec_check,
     "no_action": _no_action,
 }

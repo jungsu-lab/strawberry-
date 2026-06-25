@@ -16,8 +16,8 @@ Scenario outputs are decision support, not validated causal simulation or contro
   - `irrigation` high confidence=0.25: substrate moisture is below the literature starting threshold, VPD is high, indicating higher transpiration demand, radiation is high enough to raise water-demand attention
     - Risks: confirm recent irrigation, drainage, and sensor units before changing volume; usable training rows are below the configured minimum
     - Safety: decision_support_only, requires_human_review, insufficient_training_rows, insufficient_data_fallback, rule_based_fallback
-  - `harvest_monitoring` low confidence=0.38: visible fruit count supports harvest review, high temperature can increase quality-loss risk
-    - Risks: market target and distribution temperature can change harvest thresholds
+  - `nutrient_ec_check` low confidence=0.2: compare root-zone EC with drainage EC before changing fertigation
+    - Risks: do not diagnose plant nutrient status from EC alone
     - Safety: decision_support_only, requires_human_review
 - What-if directions:
   - `irrigation`: moisture likely increases
@@ -40,12 +40,19 @@ Scenario outputs are decision support, not validated causal simulation or contro
   - Risks: human review is required before ventilation or dehumidification control changes
   - Safety: decision_support_only, requires_human_review
 - Full ranking highlights:
-  - `disease_environment_risk_proxy` high confidence=0.82: environmental disease risk proxy review, humidity is high, VPD is low, rain probability increases monitoring attention
-    - Risks: not actual disease prediction without disease labels
-    - Safety: decision_support_only, requires_human_review, requires_field_confirmation
   - `ventilation_dehumidification` high confidence=0.76: humidity is high, low VPD suggests wet-canopy conditions
     - Risks: human review is required before ventilation or dehumidification control changes
     - Safety: decision_support_only, requires_human_review
+  - `irrigation` low confidence=0.2: irrigation signal is weak; monitor substrate moisture
+    - Risks: confirm recent irrigation, drainage, and sensor units before changing volume
+    - Safety: decision_support_only, requires_human_review
+  - `nutrient_ec_check` low confidence=0.2: compare root-zone EC with drainage EC before changing fertigation
+    - Risks: do not diagnose plant nutrient status from EC alone
+    - Safety: decision_support_only, requires_human_review
+- Auxiliary alerts:
+  - `disease_environment_risk_proxy` high confidence=0.82: environmental disease risk proxy review, humidity is high, VPD is low, rain probability increases monitoring attention
+    - Risks: not actual disease prediction without disease labels
+    - Safety: decision_support_only, requires_human_review, requires_field_confirmation
   - `leaf_removal_caution` medium confidence=0.54: cautious leaf removal review only, leaf density is high, humidity suggests airflow review
     - Risks: avoid aggressive or repeated leaf removal that reduces plant vigor
     - Safety: decision_support_only, requires_human_review
@@ -73,8 +80,8 @@ Scenario outputs are decision support, not validated causal simulation or contro
   - `irrigation` low confidence=0.36: substrate moisture is below the literature starting threshold
     - Risks: confirm recent irrigation, drainage, and sensor units before changing volume; recent irrigation history should reduce urgency until response is checked
     - Safety: decision_support_only, requires_human_review
-  - `harvest_monitoring` low confidence=0.28: visible fruit count supports harvest review
-    - Risks: market target and distribution temperature can change harvest thresholds
+  - `ventilation_dehumidification` low confidence=0.2: ventilation/dehumidification signal is weak
+    - Risks: human review is required before ventilation or dehumidification control changes
     - Safety: decision_support_only, requires_human_review
 - What-if directions:
   - `nutrient_ec_check`: EC issue becomes better characterized; EC issue remains unresolved until fertigation is adjusted
@@ -100,9 +107,9 @@ Scenario outputs are decision support, not validated causal simulation or contro
   - `ventilation_dehumidification` medium confidence=0.25: low VPD suggests wet-canopy conditions
     - Risks: human review is required before ventilation or dehumidification control changes; usable training rows are below the configured minimum
     - Safety: decision_support_only, requires_human_review, insufficient_training_rows, insufficient_data_fallback, rule_based_fallback
-  - `disease_environment_risk_proxy` low confidence=0.38: environmental disease risk proxy review, VPD is low
-    - Risks: not actual disease prediction without disease labels
-    - Safety: decision_support_only, requires_human_review, requires_field_confirmation
+  - `irrigation` low confidence=0.2: irrigation signal is weak; monitor substrate moisture
+    - Risks: confirm recent irrigation, drainage, and sensor units before changing volume
+    - Safety: decision_support_only, requires_human_review
 - What-if directions:
   - `heating_low_temperature`: temperature likely increases; low-temperature stress may decrease
     - Assumptions: directional v0 estimate based on literature/manual rules; local calibration and human review are required; model prediction fallback: usable training rows are below the configured minimum
@@ -117,17 +124,24 @@ Scenario outputs are decision support, not validated causal simulation or contro
 ## Leaf removal caution: dense canopy with recent leaf work
 
 - Expected focus: `leaf_removal_caution`
-- Focus recommendation: `leaf_removal_caution` low confidence=0.34: cautious leaf removal review only, leaf density is high, humidity suggests airflow review
+- Focus recommendation: `leaf_removal_caution` medium confidence=0.44: cautious leaf removal review only, leaf density is high, humidity suggests airflow review
   - Risks: avoid aggressive or repeated leaf removal that reduces plant vigor; recent leaf pruning should lower urgency
   - Safety: decision_support_only, requires_human_review
 - Full ranking highlights:
   - `ventilation_dehumidification` medium confidence=0.5: humidity is high
     - Risks: human review is required before ventilation or dehumidification control changes
     - Safety: decision_support_only, requires_human_review
+  - `irrigation` low confidence=0.2: irrigation signal is weak; monitor substrate moisture
+    - Risks: confirm recent irrigation, drainage, and sensor units before changing volume
+    - Safety: decision_support_only, requires_human_review
+  - `nutrient_ec_check` low confidence=0.2: compare root-zone EC with drainage EC before changing fertigation
+    - Risks: do not diagnose plant nutrient status from EC alone
+    - Safety: decision_support_only, requires_human_review
+- Auxiliary alerts:
   - `disease_environment_risk_proxy` medium confidence=0.44: environmental disease risk proxy review, humidity is high
     - Risks: not actual disease prediction without disease labels
     - Safety: decision_support_only, requires_human_review, requires_field_confirmation
-  - `leaf_removal_caution` low confidence=0.34: cautious leaf removal review only, leaf density is high, humidity suggests airflow review
+  - `leaf_removal_caution` medium confidence=0.44: cautious leaf removal review only, leaf density is high, humidity suggests airflow review
     - Risks: avoid aggressive or repeated leaf removal that reduces plant vigor; recent leaf pruning should lower urgency
     - Safety: decision_support_only, requires_human_review
 - What-if directions:

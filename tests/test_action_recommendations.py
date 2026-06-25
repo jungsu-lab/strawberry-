@@ -13,6 +13,19 @@ from libsbapi.evidence_rules import load_evidence_rules
 
 
 class ActionRecommendationEngineTest(unittest.TestCase):
+    LEVEL1_ACTIONS = {
+        "irrigation",
+        "nutrient_ec_check",
+        "ventilation_dehumidification",
+        "shading_high_temperature",
+        "heating_low_temperature",
+    }
+
+    def test_main_recommendations_contain_only_five_level1_actions(self) -> None:
+        recommendations = ActionRecommendationEngine(load_evidence_rules()).recommend(_snapshot())
+
+        self.assertEqual({item.action_type for item in recommendations}, self.LEVEL1_ACTIONS)
+
     def test_high_vpd_and_low_moisture_suggests_irrigation_check(self) -> None:
         snapshot = _snapshot(
             sensor_state=SensorState(
@@ -50,6 +63,12 @@ class ActionRecommendationEngineTest(unittest.TestCase):
         self.assertIn("low VPD", ventilation.reason)
         self.assertIn("human review", " ".join(ventilation.risks))
 
+        alerts = ActionRecommendationEngine(load_evidence_rules()).auxiliary_alerts(snapshot)
+        disease = _single(alerts, "disease_environment_risk_proxy")
+        self.assertIn("environmental disease risk proxy", disease.reason)
+        self.assertIn("scouting", disease.expected_effect)
+        self.assertNotIn("disease_environment_risk_proxy", [item.action_type for item in recommendations])
+
     def test_high_ec_suggests_drainage_and_root_zone_ec_check(self) -> None:
         snapshot = _snapshot(
             root_zone_state=RootZoneState(root_zone_ec=2.7),
@@ -84,7 +103,7 @@ class ActionRecommendationEngineTest(unittest.TestCase):
             growth_state=GrowthState(growth_stage="fruiting", leaf_density=0.91),
         )
 
-        recommendations = ActionRecommendationEngine(load_evidence_rules()).recommend(snapshot)
+        recommendations = ActionRecommendationEngine(load_evidence_rules()).auxiliary_alerts(snapshot)
         leaf = _single(recommendations, "leaf_removal_caution")
 
         self.assertEqual(leaf.priority, "medium")
@@ -99,12 +118,32 @@ class ActionRecommendationEngineTest(unittest.TestCase):
             growth_state=GrowthState(disease_spot_ratio=0.04),
         )
 
-        recommendations = ActionRecommendationEngine(load_evidence_rules()).recommend(snapshot)
+        recommendations = ActionRecommendationEngine(load_evidence_rules()).auxiliary_alerts(snapshot)
         disease = _single(recommendations, "disease_environment_risk_proxy")
 
         self.assertIn("environmental disease risk proxy", disease.reason)
         self.assertIn("not actual disease prediction", " ".join(disease.risks))
         self.assertIn("requires_field_confirmation", disease.safety_flags)
+
+    def test_harvest_alert_does_not_appear_without_growth_or_image_evidence(self) -> None:
+        snapshot = _snapshot(
+            sensor_state=SensorState(temperature_c=29.0),
+            growth_state=GrowthState(growth_stage="vegetative"),
+        )
+
+        alerts = ActionRecommendationEngine(load_evidence_rules()).auxiliary_alerts(snapshot)
+
+        self.assertNotIn("harvest_monitoring", [item.action_type for item in alerts])
+
+    def test_leaf_alert_does_not_appear_without_canopy_or_humidity_evidence(self) -> None:
+        snapshot = _snapshot(
+            sensor_state=SensorState(humidity_pct=70.0),
+            growth_state=GrowthState(growth_stage="fruiting"),
+        )
+
+        alerts = ActionRecommendationEngine(load_evidence_rules()).auxiliary_alerts(snapshot)
+
+        self.assertNotIn("leaf_removal_caution", [item.action_type for item in alerts])
 
 
 def _snapshot(

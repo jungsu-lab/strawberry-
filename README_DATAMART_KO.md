@@ -72,7 +72,8 @@ rows = client.request(
 ## BerryNext AI와 연결
 
 스마트팜코리아 API에서 가져온 데이터는 `BerryNextDecisionEngine`의 입력으로 정리할 수 있습니다.
-이 엔진은 관수/양액, 병해 위험도, 수확 시기 추천을 MVP 범위로 다룹니다.
+이 엔진은 관수, EC/양액 조정 검토, 환기, 차광, 보온/난방 검토를 Level 1 추천 범위로 다룹니다.
+병해 위험 예찰, 수확 가능성, 적엽 검토는 검증된 핵심 예측이 아니라 Level 2 보조 알림으로만 다룹니다.
 
 ```python
 from libsbapi import BerryNextDecisionEngine, GreenhouseSnapshot, ImageGrowthSignals, WeatherForecast
@@ -97,7 +98,8 @@ for recommendation in engine.recommend(snapshot):
 ## 오늘 할 일 추천
 
 농작업 의사결정 AI는 `DailyFarmWorkDecisionEngine`을 사용합니다.
-생육단계, 온실환경, 이미지/예찰, 작업이력을 `FarmWorkContext`로 합쳐 방제, 관수, 수확, 적엽 중 오늘 우선순위를 뽑습니다.
+생육단계, 온실환경, 이미지/예찰, 작업이력을 `FarmWorkContext`로 합칠 수 있지만, 작업이력은 지도학습 라벨이 아니라 안전 간격, cooldown, 설명 근거로만 사용합니다.
+새 방향에서는 관수, EC/양액 조정, 환기, 차광, 보온/난방 검토를 Level 1 추천으로 고정하고, 병해 예찰, 수확 가능성, 적엽 검토는 Level 2 보조 알림으로 분리합니다.
 
 실제 `딸기 전기`, `딸기 펠릿` 엑셀 데이터셋의 컬럼 매핑과 전처리 방향은 `DATASET_MAPPING_KO.md`에 정리되어 있습니다.
 

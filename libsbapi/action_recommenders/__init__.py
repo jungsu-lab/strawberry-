@@ -31,14 +31,19 @@ from libsbapi.prediction_targets import prediction_relates_to_action
 ACTION_MODULES = (
     irrigation,
     nutrient_ec_check,
-    ph_check,
     ventilation_dehumidification,
     shading_high_temperature,
     heating_low_temperature,
+)
+SUPPORTING_MODULES = (
+    ph_check,
+)
+AUXILIARY_ALERT_MODULES = (
     disease_environment_risk_proxy,
     harvest_monitoring,
     leaf_removal_caution,
 )
+MIN_AUXILIARY_PRIORITY = {"medium", "high"}
 PRIORITY_RANK = {"low": 1, "medium": 2, "high": 3}
 PredictionInput: TypeAlias = PredictionResult | tuple[PredictionResult, ...] | None
 
@@ -52,10 +57,33 @@ class ActionRecommendationEngine:
         snapshot: GreenhouseSnapshot,
         prediction: PredictionInput = None,
     ) -> tuple[RecommendationResult, ...]:
+        return self._recommend_from_modules(snapshot, prediction, ACTION_MODULES)
+
+    def auxiliary_alerts(
+        self,
+        snapshot: GreenhouseSnapshot,
+        prediction: PredictionInput = None,
+    ) -> tuple[RecommendationResult, ...]:
+        alerts = self._recommend_from_modules(snapshot, prediction, AUXILIARY_ALERT_MODULES)
+        return tuple(item for item in alerts if item.priority in MIN_AUXILIARY_PRIORITY)
+
+    def supporting_recommendations(
+        self,
+        snapshot: GreenhouseSnapshot,
+        prediction: PredictionInput = None,
+    ) -> tuple[RecommendationResult, ...]:
+        return self._recommend_from_modules(snapshot, prediction, SUPPORTING_MODULES)
+
+    def _recommend_from_modules(
+        self,
+        snapshot: GreenhouseSnapshot,
+        prediction: PredictionInput,
+        modules: tuple,
+    ) -> tuple[RecommendationResult, ...]:
         grouped_rules = evidence_rules_by_action_type(self.evidence_rules)
         predictions = _normalize_predictions(prediction)
         recommendations: list[RecommendationResult] = []
-        for module in ACTION_MODULES:
+        for module in modules:
             module_prediction = _prediction_for_action(module.ACTION_TYPE, predictions)
             context = RecommendationContext(
                 snapshot=snapshot,

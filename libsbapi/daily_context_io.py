@@ -51,6 +51,19 @@ def _plan_to_json(record: DailyContextRecord, plan: DailyFarmWorkPlan) -> JsonOb
             }
             for task in plan.tasks
         ],
+        "auxiliary_alerts": [
+            {
+                "work_type": alert.work_type.value,
+                "timing": alert.timing.value,
+                "priority": alert.priority,
+                "score": alert.score,
+                "title": alert.title,
+                "reason": alert.reason,
+                "safeguards": list(alert.safeguards),
+                "metrics": dict(alert.metrics),
+            }
+            for alert in plan.auxiliary_alerts
+        ],
         "data_sources": list(plan.data_sources),
     }
 

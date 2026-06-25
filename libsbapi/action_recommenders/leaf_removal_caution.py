@@ -26,7 +26,7 @@ def recommend(context: RecommendationContext) -> tuple[RecommendationResult, ...
         score += 0.12
         reasons.append("humidity suggests airflow review")
     if has_recent_work(context, "leaf_pruning"):
-        score -= 0.2
+        score -= 0.1
         risks.append("recent leaf pruning should lower urgency")
     prediction = usable_prediction(context)
     if (

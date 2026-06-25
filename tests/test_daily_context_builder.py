@@ -84,7 +84,8 @@ class DailyContextBuilderTest(unittest.TestCase):
             self.assertEqual(len(log_lines), 1)
             log_payload = json.loads(log_lines[0])
             self.assertEqual(log_payload["farm_id"], "electric")
-            self.assertTrue(log_payload["tasks"])
+            self.assertIn("tasks", log_payload)
+            self.assertTrue(log_payload["auxiliary_alerts"])
 
 
 def _write_xlsx(path: Path, rows: list[list[str]]) -> None:

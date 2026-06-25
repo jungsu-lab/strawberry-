@@ -8,6 +8,7 @@ __pycache__/
 /.idea/
 /.vscode/
 /venv/
+/.venv/
 /outputs/
 
 # Local greenhouse datasets and downloaded reference rooms.

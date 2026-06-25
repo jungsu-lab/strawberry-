@@ -355,3 +355,35 @@ Recommended second edit set:
 Implemented today: a rule-first strawberry decision-support prototype with daily context building, task ranking, paper-rule simulation, scenario comparison, a Streamlit simulation dashboard, and tests for existing rule behavior.
 
 Not implemented today: repository-integrated GAM modeling, validated short-term prediction, formal confidence gates for model use, actual farm work-history ingestion beyond scouting, structured literature rule metadata, and a runtime contract that fully prevents autonomous-controller overclaiming.
+
+## Follow-up Direction Note
+
+Follow-up date: 2026-06-25
+
+The project direction has been corrected after this audit. BerryNext should now be described as an explainable strawberry greenhouse decision-support system, not as a supervised farmwork-history learning system and not as an autonomous greenhouse controller.
+
+The fixed Level 1 management actions are:
+
+- irrigation
+- EC / nutrient solution adjustment
+- ventilation
+- shading
+- heat preservation / heating review
+
+Disease-risk scouting, harvest possibility, and leaf-removal review are Level 2 auxiliary alerts only. They must not be presented as validated disease, harvest, or leaf-removal prediction systems unless explicit local labels, validation results, and tests are added.
+
+Work history, when available, is used only for safety spacing, cooldown intervals, and explanation. It is not a supervised label source. Scenario simulation compares candidate action directions and must not be used to fabricate fake labels for supervised training.
+
+The intended architecture is:
+
+```text
+Sensor Data
+→ Current State Builder
+→ Environmental Predictor
+→ Scenario Simulator
+→ Threshold / Literature Rule Engine
+→ Work-Need Scorer
+→ Recommendation Generator
+```
+
+GAM belongs in the Environmental Predictor stage as a short-term environmental delta predictor. Predictor maturity should progress from v0 no-change baseline, v1 rolling delta baseline, v2 linear regression, v3 GAM, then v4 LSTM or Transformer only if data volume and validation justify it.

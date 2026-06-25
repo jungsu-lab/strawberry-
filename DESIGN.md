@@ -2,7 +2,7 @@
 
 ## 1. Atmosphere & Identity
 
-A quiet greenhouse control room for growers comparing practical work decisions, not a decorative analytics site. The signature is evidence-led comparison: dense controls, restrained surfaces, and visible rule explanations that keep the simulated crop state traceable.
+A quiet greenhouse decision-support room for growers comparing practical management recommendations, not a decorative analytics site or autonomous-control console. The signature is evidence-led comparison: dense controls, restrained surfaces, and visible rule explanations that keep the simulated crop state traceable.
 
 ## 2. Color
 
@@ -94,7 +94,7 @@ All spacing derives from a base of **4px**.
 ## 5. Components
 
 ### Scenario Controls
-- **Structure**: grouped sidebar inputs for initial state, environment, work intensity, and duration.
+- **Structure**: grouped sidebar inputs for initial state, environment, candidate action intensity, and duration.
 - **Variants**: baseline, active scenario, risk scenario.
 - **Spacing**: --space-3 inside fields, --space-6 between groups.
 - **States**: default, focus, disabled, validation error.

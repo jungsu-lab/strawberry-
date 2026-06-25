@@ -63,7 +63,7 @@ def priority_from_score(score: float) -> str:
 def evidence_references(rules: tuple[EvidenceRule, ...]) -> tuple[EvidenceReference, ...]:
     return tuple(
         EvidenceReference(
-            source_type=rule.evidence_level,
+            source_type=rule.source_type,
             title=rule.source_title,
             reference_id=rule.id,
             note=rule.source_note,

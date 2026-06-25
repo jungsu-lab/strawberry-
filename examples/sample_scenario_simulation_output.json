@@ -18,11 +18,11 @@
       "confidence": 0.56,
       "evidence_references": [
         {
-          "source_type": "literature_assumption",
+          "source_type": "prototype_assumption",
           "title": "Sensor-controlled fertigation management for higher yield and quality in greenhouse hydroponic strawberries; Solar-radiation and substrate-moisture fertigation study for Seolhyang strawberry",
           "reference_id": "irrigation.solar_moisture_vpd.001",
           "url": null,
-          "note": "Local markdown: 01_s13580-025-00677-z.md links Rad/VPD/LAI to transpiration; 08_N0090300416.md reports solar-radiation and substrate-moisture fertigation including 60% moisture and 100/150/250 J/cm2 treatments.",
+          "note": "Prototype/manual-review-needed rule. Local markdown: 01_s13580-025-00677-z.md links Rad/VPD/LAI to transpiration; 08_N0090300416.md reports solar-radiation and substrate-moisture fertigation including 60% moisture and 100/150/250 J/cm2 treatments.",
           "confidence": 0.62
         }
       ],
@@ -48,11 +48,11 @@
       "confidence": 0.7,
       "evidence_references": [
         {
-          "source_type": "literature_assumption",
+          "source_type": "prototype_assumption",
           "title": "Strawberry growth/yield environment studies and Botrytis environment-risk references",
           "reference_id": "environment.ventilation_dehumidification.001",
           "url": null,
-          "note": "Local markdown: 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md uses RH, PAR, VPD, CO2, EC, and soil moisture as growth/yield predictors; simulator rules already separate environmental pressure from disease labels.",
+          "note": "Prototype/manual-review-needed rule. Local markdown: 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md uses RH, PAR, VPD, CO2, EC, and soil moisture as growth/yield predictors; simulator rules already separate environmental pressure from disease labels.",
           "confidence": 0.62
         }
       ],
@@ -78,11 +78,11 @@
       "confidence": 0.5,
       "evidence_references": [
         {
-          "source_type": "literature_assumption",
+          "source_type": "prototype_assumption",
           "title": "Sensor-controlled fertigation management for greenhouse strawberries; strawberry environment-growth prediction studies",
           "reference_id": "environment.shading_high_temperature.001",
           "url": null,
-          "note": "Local markdown: 01_s13580-025-00677-z.md links radiation and VPD with transpiration; 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md treats temperature, PAR, VPD, CO2, and moisture as explanatory variables.",
+          "note": "Prototype/manual-review-needed rule. Local markdown: 01_s13580-025-00677-z.md links radiation and VPD with transpiration; 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md treats temperature, PAR, VPD, CO2, and moisture as explanatory variables.",
           "confidence": 0.62
         }
       ],

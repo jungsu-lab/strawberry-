@@ -76,6 +76,30 @@ class ScenarioSimulatorTest(unittest.TestCase):
         self.assertIn("temperature likely increases", scenario.expected_state_direction)
         self.assertNotIn("9.8", " ".join(scenario.expected_state_direction))
 
+    def test_expanded_final_pipeline_candidate_names_are_supported(self) -> None:
+        request = ScenarioSimulationRequest(
+            snapshot=_snapshot(),
+            candidate_actions=(
+                ScenarioCandidate("no_irrigation"),
+                ScenarioCandidate("lower_ec_nutrient_adjustment"),
+                ScenarioCandidate("raise_ec_check_supplied_ec"),
+                ScenarioCandidate("ventilation"),
+                ScenarioCandidate("no_ventilation"),
+                ScenarioCandidate("shading"),
+                ScenarioCandidate("no_shading"),
+                ScenarioCandidate("heat_preservation_heating_review"),
+                ScenarioCandidate("no_heat_preservation"),
+            ),
+            evidence_rules=load_evidence_rules(),
+        )
+
+        report = simulate_scenarios(request)
+
+        self.assertEqual(len(report.scenarios), 9)
+        self.assertEqual(report.scenarios[0].action_type, "no_irrigation")
+        self.assertEqual(report.scenarios[3].action_type, "ventilation")
+        self.assertEqual(report.scenarios[7].action_type, "heat_preservation_heating_review")
+
     def test_weak_prediction_is_reported_as_rule_fallback_without_confidence_bonus(self) -> None:
         request = ScenarioSimulationRequest(
             snapshot=_snapshot(),

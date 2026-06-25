@@ -15,7 +15,7 @@ class BerryNextDecisionEngineTest(unittest.TestCase):
         self.assertGreater(vpd, 0.9)
         self.assertLess(vpd, 1.1)
 
-    def test_recommendations_are_ranked_by_score(self):
+    def test_primary_recommendations_exclude_auxiliary_alerts(self):
         engine = BerryNextDecisionEngine()
         snapshot = GreenhouseSnapshot(
             inside_temperature_c=26,
@@ -34,10 +34,11 @@ class BerryNextDecisionEngineTest(unittest.TestCase):
         )
 
         recommendations = engine.recommend(snapshot)
+        auxiliary_alerts = engine.auxiliary_alerts(snapshot)
 
-        self.assertEqual(len(recommendations), 3)
-        self.assertGreaterEqual(recommendations[0].score, recommendations[1].score)
-        self.assertGreaterEqual(recommendations[1].score, recommendations[2].score)
+        self.assertEqual([item.action for item in recommendations], ["increase_or_schedule_irrigation"])
+        self.assertIn("prioritize_disease_risk_scouting", [item.action for item in auxiliary_alerts])
+        self.assertIn("harvest_today", [item.action for item in auxiliary_alerts])
 
     def test_over_wet_root_zone_delays_irrigation(self):
         engine = BerryNextDecisionEngine()

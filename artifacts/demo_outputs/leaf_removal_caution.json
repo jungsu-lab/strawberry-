@@ -2,7 +2,7 @@
   "scenario_id": "leaf_removal_caution",
   "title": "Leaf removal caution: dense canopy with recent leaf work",
   "expected_focus_action": "leaf_removal_caution",
-  "input_path": "/home/jungsu0327/strawberry-/examples/scenarios/05_leaf_removal_caution.json",
+  "input_path": "/home/jungsu/strawberry-/examples/scenarios/05_leaf_removal_caution.json",
   "recommendations": [
     {
       "action_type": "ventilation_dehumidification",
@@ -15,65 +15,6 @@
       ],
       "evidence_references": [
         "environment.ventilation_dehumidification.001"
-      ],
-      "safety_flags": [
-        "decision_support_only",
-        "requires_human_review"
-      ],
-      "model_used": "literature_manual_rules",
-      "fallback_used": true
-    },
-    {
-      "action_type": "disease_environment_risk_proxy",
-      "priority": "medium",
-      "confidence": 0.44,
-      "reason": "environmental disease risk proxy review, humidity is high",
-      "expected_effect": "prioritize scouting and preventive review without claiming disease prediction",
-      "risks": [
-        "not actual disease prediction without disease labels"
-      ],
-      "evidence_references": [
-        "disease.environment_proxy.001"
-      ],
-      "safety_flags": [
-        "decision_support_only",
-        "requires_human_review",
-        "requires_field_confirmation"
-      ],
-      "model_used": "literature_manual_rules",
-      "fallback_used": true
-    },
-    {
-      "action_type": "leaf_removal_caution",
-      "priority": "low",
-      "confidence": 0.34,
-      "reason": "cautious leaf removal review only, leaf density is high, humidity suggests airflow review",
-      "expected_effect": "improve canopy airflow only after confirming plant vigor and leaf area",
-      "risks": [
-        "avoid aggressive or repeated leaf removal that reduces plant vigor",
-        "recent leaf pruning should lower urgency"
-      ],
-      "evidence_references": [
-        "canopy.leaf_removal_caution.001"
-      ],
-      "safety_flags": [
-        "decision_support_only",
-        "requires_human_review"
-      ],
-      "model_used": "literature_manual_rules",
-      "fallback_used": true
-    },
-    {
-      "action_type": "harvest_monitoring",
-      "priority": "low",
-      "confidence": 0.28,
-      "reason": "visible fruit count supports harvest review",
-      "expected_effect": "support harvest timing review using ripening and quality-risk signals",
-      "risks": [
-        "market target and distribution temperature can change harvest thresholds"
-      ],
-      "evidence_references": [
-        "harvest.monitoring.001"
       ],
       "safety_flags": [
         "decision_support_only",
@@ -121,25 +62,6 @@
       "fallback_used": true
     },
     {
-      "action_type": "ph_check",
-      "priority": "low",
-      "confidence": 0.2,
-      "reason": "pH signal is inside the starting monitoring range",
-      "expected_effect": "support nutrient availability by confirming pH drift with calibrated sensors",
-      "risks": [
-        "pH correction should be gradual and based on repeated measurements"
-      ],
-      "evidence_references": [
-        "nutrient.ph_check.001"
-      ],
-      "safety_flags": [
-        "decision_support_only",
-        "requires_human_review"
-      ],
-      "model_used": "literature_manual_rules",
-      "fallback_used": true
-    },
-    {
       "action_type": "shading_high_temperature",
       "priority": "low",
       "confidence": 0.2,
@@ -178,6 +100,48 @@
       "fallback_used": true
     }
   ],
+  "auxiliary_alerts": [
+    {
+      "action_type": "disease_environment_risk_proxy",
+      "priority": "medium",
+      "confidence": 0.44,
+      "reason": "environmental disease risk proxy review, humidity is high",
+      "expected_effect": "prioritize scouting and preventive review without claiming disease prediction",
+      "risks": [
+        "not actual disease prediction without disease labels"
+      ],
+      "evidence_references": [
+        "disease.environment_proxy.001"
+      ],
+      "safety_flags": [
+        "decision_support_only",
+        "requires_human_review",
+        "requires_field_confirmation"
+      ],
+      "model_used": "literature_manual_rules",
+      "fallback_used": true
+    },
+    {
+      "action_type": "leaf_removal_caution",
+      "priority": "medium",
+      "confidence": 0.44,
+      "reason": "cautious leaf removal review only, leaf density is high, humidity suggests airflow review",
+      "expected_effect": "improve canopy airflow only after confirming plant vigor and leaf area",
+      "risks": [
+        "avoid aggressive or repeated leaf removal that reduces plant vigor",
+        "recent leaf pruning should lower urgency"
+      ],
+      "evidence_references": [
+        "canopy.leaf_removal_caution.001"
+      ],
+      "safety_flags": [
+        "decision_support_only",
+        "requires_human_review"
+      ],
+      "model_used": "literature_manual_rules",
+      "fallback_used": true
+    }
+  ],
   "what_if_simulation": {
     "summary": "v0 what-if scenario estimate for decision support; compare directions, not precise effects",
     "not_validated_warning": "This is a what-if scenario estimate, not a validated causal simulation or control command.",
@@ -198,11 +162,11 @@
         "confidence": 0.58,
         "evidence_references": [
           {
-            "source_type": "literature_assumption",
+            "source_type": "prototype_assumption",
             "title": "Strawberry growth/yield environment studies and Botrytis environment-risk references",
             "reference_id": "environment.ventilation_dehumidification.001",
             "url": null,
-            "note": "Local markdown: 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md uses RH, PAR, VPD, CO2, EC, and soil moisture as growth/yield predictors; simulator rules already separate environmental pressure from disease labels.",
+            "note": "Prototype/manual-review-needed rule. Local markdown: 10_Prediction_of_Strawberry_Growth_and_Fruit_Yield_based_on_Environmental_and_Growt.md uses RH, PAR, VPD, CO2, EC, and soil moisture as growth/yield predictors; simulator rules already separate environmental pressure from disease labels.",
             "confidence": 0.62
           }
         ],

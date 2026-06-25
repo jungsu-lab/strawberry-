@@ -22,9 +22,12 @@ class BuildDailyContextTest(unittest.TestCase):
         plan = plan_from_json_file(sample_path)
 
         work_types = [task.work_type for task in plan.tasks]
-        self.assertIn(FarmWorkType.HARVEST, work_types)
-        self.assertIn(FarmWorkType.DISEASE_CONTROL, work_types)
         self.assertIn(FarmWorkType.IRRIGATION, work_types)
+        self.assertNotIn(FarmWorkType.HARVEST, work_types)
+        self.assertNotIn(FarmWorkType.DISEASE_CONTROL, work_types)
+        alert_types = [task.work_type for task in plan.auxiliary_alerts]
+        self.assertIn(FarmWorkType.HARVEST, alert_types)
+        self.assertIn(FarmWorkType.DISEASE_CONTROL, alert_types)
 
 
 if __name__ == "__main__":
