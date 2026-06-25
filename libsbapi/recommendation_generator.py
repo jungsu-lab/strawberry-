@@ -4,21 +4,18 @@ from dataclasses import dataclass
 from typing import Any, Final
 
 from .decision_contract import CoreRecommendation, PredictionResult, WorkNeedScore
+from .display_labels import (
+    ACTION_LABELS_KO as LEVEL1_ACTION_LABELS_KO,
+    AUXILIARY_ALERT_LABELS_KO,
+    STATUS_LABELS_KO,
+    action_label,
+)
 from .evidence_rules import EvidenceRule, evidence_rules_by_action_type
 from .prediction_targets import prediction_relates_to_action
 from .scenario_comparison import ShortHorizonScenarioResult
 
 
-ACTION_LABELS_KO: Final = {
-    "irrigation": "관수",
-    "nutrient_ec_check": "EC/양액 조정 검토",
-    "ventilation_dehumidification": "환기",
-    "shading_high_temperature": "차광",
-    "heating_low_temperature": "보온/난방 검토",
-    "disease_environment_risk_proxy": "병해 위험 예찰 알림",
-    "harvest_monitoring": "수확 가능성 알림",
-    "leaf_removal_caution": "적엽 검토 알림",
-}
+ACTION_LABELS_KO: Final = {**LEVEL1_ACTION_LABELS_KO, **AUXILIARY_ALERT_LABELS_KO}
 SCENARIO_ACTION_TO_LEVEL1: Final = {
     "irrigation": "irrigation",
     "no_irrigation": "irrigation",
@@ -31,7 +28,7 @@ SCENARIO_ACTION_TO_LEVEL1: Final = {
     "heat_preservation_heating_review": "heating_low_temperature",
     "no_heat_preservation": "heating_low_temperature",
 }
-NO_CONTROL_NOTICE: Final = "모든 출력은 의사결정 보조이며 실행 전 사람의 확인이 필요합니다."
+NO_CONTROL_NOTICE: Final = "모든 출력은 decision_support이며, 실제 작업 전 사람의 확인이 필요합니다."
 TEXT_KO: Final = {
     "root-zone moisture may improve": "근권 수분이 개선될 가능성이 있습니다.",
     "EC/salinity stress may dilute if drainage is adequate": "배액이 충분하면 EC/염류 스트레스가 완화될 수 있습니다.",
@@ -46,7 +43,7 @@ TEXT_KO: Final = {
     "verify feed EC, drain EC, and drainage ratio first": "공급 EC, 배액 EC, 배액률을 먼저 확인해야 합니다.",
     "raising EC can increase salinity stress if drain EC is already high": "배액 EC가 이미 높다면 EC 상향은 염류 스트레스를 키울 수 있습니다.",
     "treat as EC check, not automatic fertilizer increase": "자동 비료 증량이 아니라 EC 확인 항목으로 다뤄야 합니다.",
-    "humidity and disease-environment risk proxy may decrease": "습도와 병해 환경 위험 proxy가 낮아질 수 있습니다.",
+    "humidity and disease-environment risk proxy may decrease": "습도와 병해 환경 위험 프록시가 낮아질 수 있습니다.",
     "avoids cold-air ventilation side effects": "찬 공기 유입에 따른 환기 부작용을 피할 수 있습니다.",
     "temperature may drop if outside air is cold": "외기가 차가우면 내부 온도가 떨어질 수 있습니다.",
     "human review required before control changes": "환경 변경 전 사람의 검토가 필요합니다.",
@@ -58,7 +55,7 @@ TEXT_KO: Final = {
     "excess shading can reduce photosynthesis": "과도한 차광은 광합성을 낮출 수 있습니다.",
     "compare with radiation forecast and growth stage": "일사 예보와 생육단계를 함께 비교해야 합니다.",
     "heat/radiation stress may persist": "고온/일사 스트레스가 지속될 수 있습니다.",
-    "monitor VPD and fruit temperature proxy": "VPD와 과실 온도 proxy를 확인해야 합니다.",
+    "monitor VPD and fruit temperature proxy": "VPD와 과실 온도 프록시를 확인해야 합니다.",
     "low-temperature risk may decrease": "저온 위험이 낮아질 수 있습니다.",
     "avoids heating energy cost": "난방 에너지 비용을 피할 수 있습니다.",
     "energy cost increases": "에너지 비용이 증가합니다.",
@@ -174,29 +171,30 @@ def _reasons(score: WorkNeedScore, predictions: tuple[PredictionResult, ...]) ->
     if score.status == "hold":
         reasons.append(_hold_reason(score))
     elif score.status == "monitor":
-        reasons.append("현재 신호가 강하지 않아 모니터링을 유지합니다.")
+        reasons.extend(_component_reasons(score))
+        reasons.append("현재 긴급 작업 신호는 강하지 않아 모니터링을 유지합니다.")
     else:
         reasons.extend(_component_reasons(score))
     if not reasons:
         reasons.append("현재 상태와 규칙 기반 점수에서 큰 위험 신호가 제한적입니다.")
     fallback_refs = [item for item in predictions if item.fallback_used]
     if fallback_refs:
-        reasons.append("일부 예측은 baseline/fallback 결과이므로 보수적으로 해석해야 합니다.")
+        reasons.append("일부 예측은 기준선 예측기 결과이므로 실제 작업 전 현장 확인이 필요합니다.")
     return tuple(reasons)
 
 
 def _component_reasons(score: WorkNeedScore) -> list[str]:
     reasons: list[str] = []
     if score.moisture_stress > 0:
-        reasons.append("배지/근권 수분 스트레스 신호가 있습니다.")
+        reasons.append("배지수분 또는 근권수분이 낮아 수분 스트레스 위험이 증가할 수 있습니다.")
     if score.salinity_stress > 0:
-        reasons.append("EC 또는 염류 스트레스 확인이 필요합니다.")
+        reasons.append("근권 EC 또는 배액 EC가 높아 염류 스트레스 가능성이 있습니다.")
     if score.high_temp_stress > 0:
-        reasons.append("고온, 일사, VPD 기반 열 스트레스 가능성이 있습니다.")
+        reasons.append("고온·고일사 조건으로 차광 검토가 필요할 수 있습니다.")
     if score.low_temp_stress > 0:
-        reasons.append("저온 스트레스 가능성이 있습니다.")
+        reasons.append("예상 야간 온도가 낮아 보온 또는 난방 검토가 필요할 수 있습니다.")
     if score.disease_environment_risk > 0:
-        reasons.append("고습 또는 낮은 VPD로 병해 환경 위험 proxy가 증가할 수 있습니다.")
+        reasons.append("고습·저VPD 조건으로 결로 및 병해 환경 위험이 증가할 수 있습니다.")
     if score.energy_cost > 0:
         reasons.append("에너지 비용과 습도 상승 가능성을 함께 검토해야 합니다.")
     return reasons
@@ -211,6 +209,8 @@ def _expected_effects(
     score: WorkNeedScore,
     scenarios: tuple[ShortHorizonScenarioResult, ...],
 ) -> tuple[str, ...]:
+    if score.status == "monitor":
+        return ()
     effects = [effect for scenario in scenarios for effect in scenario.expected_benefits]
     if effects:
         return tuple(dict.fromkeys(effects))
@@ -223,6 +223,8 @@ def _risks(
     score: WorkNeedScore,
     scenarios: tuple[ShortHorizonScenarioResult, ...],
 ) -> tuple[str, ...]:
+    if score.status == "monitor":
+        return ()
     risks = [risk for scenario in scenarios for risk in (*scenario.risks, *scenario.warnings)]
     if score.status in {"recommend", "caution"}:
         risks.append("사람의 확인 없이 실행하지 마십시오.")
@@ -253,10 +255,10 @@ def _prediction_refs(action_type: str, predictions: tuple[PredictionResult, ...]
             f"confidence={prediction.confidence:.2f}"
         )
         if prediction.fallback_used:
-            label += f" baseline/fallback: {prediction.fallback_reason or prediction.model_used}"
+            label += f" 기준선/대체 예측: {prediction.fallback_reason or prediction.model_used}"
         refs.append(label)
     if not refs:
-        refs.append(f"{action_type}: prediction unavailable; baseline/fallback rules used")
+        refs.append(f"{action_label(action_type)}: 예측값 없음; 문헌/매뉴얼 기준 룰을 우선 적용")
     return tuple(refs)
 
 
@@ -311,8 +313,5 @@ def _priority(score: float) -> str:
 
 def _status_label(status: str) -> str:
     return {
-        "recommend": "추천",
-        "caution": "주의",
-        "hold": "보류",
-        "monitor": "모니터링",
+        **STATUS_LABELS_KO,
     }.get(status, status)

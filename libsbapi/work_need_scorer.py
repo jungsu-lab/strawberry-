@@ -87,8 +87,10 @@ def _irrigation_score(
         if _has_prediction(predictions, "solar_radiation")
         else state.solar_radiation
     )
+    humidity = state.humidity
     moisture_delta = _first_prediction_delta(predictions, {"root_zone_moisture", "substrate_moisture"})
     moisture_stress = 0.0
+    disease_environment_risk = 0.0
     if moisture is not None:
         if moisture < 45.0:
             moisture_stress += 76.0
@@ -102,8 +104,15 @@ def _irrigation_score(
         moisture_stress += 12.0
     if moisture_delta is not None and moisture_delta <= -3.0:
         moisture_stress += 10.0
+    if moisture is not None and moisture >= 60.0 and humidity is not None and humidity >= 88.0 and vpd is not None and vpd <= 0.4:
+        disease_environment_risk = 36.0
     score = _clamp100(moisture_stress)
-    return _work_score("irrigation", score, moisture_stress=_clamp100(moisture_stress))
+    return _work_score(
+        "irrigation",
+        score,
+        moisture_stress=_clamp100(moisture_stress),
+        disease_environment_risk=disease_environment_risk,
+    )
 
 
 def _nutrient_score(
@@ -225,25 +234,38 @@ def _confidence(
     predictions: tuple[PredictionResult, ...],
     rules: tuple[EvidenceRule, ...],
 ) -> float:
-    base = 0.56 if rules else 0.42
+    coverage = _sensor_coverage(state, action_type)
+    base = 0.38 if rules else 0.30
+    base += 0.30 * coverage
     if predictions:
-        base += 0.12
+        base += 0.08
     base -= _missing_data_penalty(state, action_type) / 200.0
     return round(max(0.2, min(base, 0.82)), 3)
 
 
+def _sensor_coverage(state: CurrentGreenhouseState, action_type: str) -> float:
+    required = _required_sensor_fields(action_type)
+    present = sum(1 for field in required if getattr(state, field) is not None)
+    return present / len(required)
+
+
 def _missing_data_penalty(state: CurrentGreenhouseState, action_type: str) -> float:
-    required = {
+    required = _required_sensor_fields(action_type)
+    if action_type == "nutrient_ec_check":
+        missing = sum(1 for field in required if getattr(state, field) is None)
+        return min(missing * 4.0, 12.0)
+    missing = sum(1 for field in required if getattr(state, field) is None)
+    return min(missing * 6.0, 18.0)
+
+
+def _required_sensor_fields(action_type: str) -> tuple[str, ...]:
+    return {
         "irrigation": ("root_zone_moisture",),
         "nutrient_ec_check": ("drain_ec", "root_ec", "feed_ec"),
         "ventilation_dehumidification": ("humidity", "vpd"),
         "shading_high_temperature": ("air_temp", "solar_radiation", "vpd"),
         "heating_low_temperature": ("air_temp",),
     }[action_type]
-    if action_type == "nutrient_ec_check":
-        return 8.0 if all(getattr(state, field) is None for field in required) else 0.0
-    missing = sum(1 for field in required if getattr(state, field) is None)
-    return min(missing * 6.0, 18.0)
 
 
 def _first_prediction_value(

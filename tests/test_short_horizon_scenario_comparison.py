@@ -52,8 +52,8 @@ class ShortHorizonScenarioComparisonTest(unittest.TestCase):
                 "no_heat_preservation",
             },
         )
-        self.assertIn("not", report.not_training_label_notice.lower())
-        self.assertIn("supervised", report.not_training_label_notice.lower())
+        self.assertIn("휴리스틱 의사결정 보조", report.not_training_label_notice)
+        self.assertIn("fake supervised", report.not_training_label_notice)
         self.assertTrue(all(not item.is_training_label for item in report.scenarios))
 
 

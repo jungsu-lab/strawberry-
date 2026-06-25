@@ -19,8 +19,8 @@ DEFAULT_CANDIDATES: Final = (
     "no_heat_preservation",
 )
 NOT_TRAINING_LABEL_NOTICE: Final = (
-    "Scenario outputs are heuristic decision-support comparisons, not ground-truth labels "
-    "and not fake supervised farmwork labels."
+    "시나리오 출력은 휴리스틱 의사결정 보조 비교이며, ground-truth label이나 "
+    "fake supervised farmwork label이 아닙니다."
 )
 
 

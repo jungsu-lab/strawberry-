@@ -4,8 +4,20 @@
 # How to run:
 #   python3 -m examples.greenhouse_scenario_compare
 
+from libsbapi.display_labels import scenario_label
 from libsbapi.greenhouse_models import GreenhouseEnvironment, GreenhouseState
+from libsbapi.recommendation_generator import TEXT_KO
 from libsbapi.scenario_comparison import compare_action_candidates
+
+
+DISPLAY_CANDIDATES = (
+    "no_irrigation",
+    "irrigation",
+    "lower_ec_nutrient_adjustment",
+    "ventilation",
+    "shading",
+    "heat_preservation_heating_review",
+)
 
 
 def main() -> None:
@@ -32,14 +44,17 @@ def main() -> None:
     )
     report = compare_action_candidates(state, environment, horizon_hours=3)
 
-    print("short-horizon greenhouse action candidate comparison")
+    print("단기 Level 1 온실 관리 작업 시나리오 비교")
     print(report.not_training_label_notice)
     print(
-        "candidate | expected benefit | risk | energy cost | moisture | EC | humidity | VPD | temp | notes"
+        "후보 | 내부 action id | 기대 효과 | 위험/주의 | 에너지 비용 | 수분 | EC | 습도 | VPD | 온도 | 비고"
     )
-    print("-" * 132)
+    print("-" * 160)
     for scenario in report.scenarios:
+        if scenario.action_type not in DISPLAY_CANDIDATES:
+            continue
         print(
+            f"{scenario_label(scenario.action_type)} | "
             f"{scenario.action_type} | "
             f"{_join(scenario.expected_benefits)} | "
             f"{_join(scenario.risks)} | "
@@ -54,7 +69,15 @@ def main() -> None:
 
 
 def _join(values: tuple[str, ...]) -> str:
-    return "; ".join(values) if values else "-"
+    return "; ".join(_ko(value) for value in values) if values else "-"
+
+
+def _ko(value: str) -> str:
+    if value.startswith("heuristic prototype comparison only"):
+        return "휴리스틱 prototype 비교입니다."
+    if "fake supervised farmwork labels" in value:
+        return "시나리오 결과를 가짜 지도학습 라벨로 사용하지 않습니다."
+    return TEXT_KO.get(value, value)
 
 
 if __name__ == "__main__":

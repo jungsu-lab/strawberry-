@@ -132,8 +132,12 @@ class CurrentStateBuilder:
         }
         if values["root_zone_moisture"] is None and values["substrate_moisture"] is not None:
             values["root_zone_moisture"] = values["substrate_moisture"]
+            fallback_fields.append("root_zone_moisture")
+            warnings.append("root_zone_moisture missing, using substrate_moisture as proxy")
         if values["substrate_moisture"] is None and values["root_zone_moisture"] is not None:
             values["substrate_moisture"] = values["root_zone_moisture"]
+            fallback_fields.append("substrate_moisture")
+            warnings.append("substrate_moisture missing, using root_zone_moisture as proxy")
         missing_fields = tuple(field for field in STATE_FIELDS if values.get(field) is None)
         suspicious_fields = _suspicious_zero_fields(values)
         warnings.extend(f"{field} missing" for field in missing_fields)

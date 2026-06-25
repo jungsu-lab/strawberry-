@@ -46,7 +46,8 @@ class CorrectedBerryNextPipelineRegressionTest(unittest.TestCase):
 
         self.assertTrue(demo.scenario_report.scenarios)
         self.assertTrue(all(not item.is_training_label for item in demo.scenario_report.scenarios))
-        self.assertIn("not fake supervised", demo.scenario_report.not_training_label_notice)
+        self.assertIn("fake supervised", demo.scenario_report.not_training_label_notice)
+        self.assertIn("아닙니다", demo.scenario_report.not_training_label_notice)
 
 
 if __name__ == "__main__":

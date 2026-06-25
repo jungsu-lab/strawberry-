@@ -88,8 +88,8 @@ class RecommendationGeneratorTest(unittest.TestCase):
         )
 
         text = report.to_korean_text()
-        self.assertIn("baseline/fallback", report.level1_recommendations[0].prediction_refs[0])
-        self.assertIn("baseline", text)
+        self.assertIn("기준선/대체 예측", report.level1_recommendations[0].prediction_refs[0])
+        self.assertIn("기준선", text)
 
     def test_prediction_refs_are_limited_to_action_related_targets(self) -> None:
         report = RecommendationGenerator().generate(
@@ -147,8 +147,40 @@ class RecommendationGeneratorTest(unittest.TestCase):
         item = report.level1_recommendations[0]
         self.assertTrue(item.simulation_refs)
         self.assertIn("humidity and disease-environment risk proxy may decrease", item.expected_effects)
-        self.assertIn("습도와 병해 환경 위험 proxy가 낮아질 수 있습니다.", report.to_korean_text())
+        self.assertIn("습도와 병해 환경 위험 프록시가 낮아질 수 있습니다.", report.to_korean_text())
         self.assertNotIn("control changes", report.to_korean_text())
+
+    def test_monitor_recommendations_do_not_show_action_scenario_risks(self) -> None:
+        report = RecommendationGenerator().generate(
+            work_need_scores=(_score("shading_high_temperature", 0.0),),
+            scenario_results=(
+                ShortHorizonScenarioResult(
+                    action_type="shading",
+                    horizon_hours=3,
+                    moisture_delta=1.5,
+                    ec_delta=0.0,
+                    salinity_stress_delta=0.0,
+                    humidity_delta=1.0,
+                    vpd_delta=-0.24,
+                    temperature_delta=-2.4,
+                    disease_environment_risk_delta=0.0,
+                    energy_cost_delta=0.0,
+                    confidence=0.48,
+                    expected_benefits=("high temperature and radiation stress may decrease",),
+                    risks=("excess shading can reduce photosynthesis",),
+                    warnings=("compare with radiation forecast and growth stage",),
+                    evidence_rule_ids=("environment.shading_high_temperature.001",),
+                    evidence_tags=(),
+                    notes=("heuristic prototype comparison only",),
+                ),
+            ),
+        )
+
+        item = report.level1_recommendations[0]
+        self.assertEqual(item.status, "monitor")
+        self.assertEqual(item.expected_effects, ())
+        self.assertEqual(item.risks, ())
+        self.assertNotIn("과도한 차광", report.to_korean_text())
 
 
 def _score(action_type: str, score: float, **components: float) -> WorkNeedScore:
